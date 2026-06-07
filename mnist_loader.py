@@ -9,7 +9,7 @@ def load_data():
 
     f.close()
 
-    return (training_data, validation_data, test_data)
+    return training_data, validation_data, test_data
 
 def load_data_wrapper():
     tr_d, va_d, te_d = load_data()
@@ -28,7 +28,7 @@ def load_data_wrapper():
 
     test_data = list(zip(test_inputs, te_d[1]))
 
-    return (training_data, validation_data, test_data)
+    return training_data, validation_data, test_data
 
 
 def vectorized_result(j):

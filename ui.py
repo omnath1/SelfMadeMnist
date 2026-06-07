@@ -253,4 +253,4 @@ def show_ui(training_data):
     next_image_button(root, training_data, image_label, digit_label, screen_height)
 
     # run the window
-    root.mainloop()x
+    root.mainloop()

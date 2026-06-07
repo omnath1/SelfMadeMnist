@@ -1,0 +1,11 @@
+WEIGHT_INITIALIZATION
+
+standard:
+    sets the weights randomly using a standard normal distribution
+    can cause activations to become too large in deeper networks
+
+improved:
+    sets the weights randomly using a scaled normal distribution
+    divides weights by sqrt(number_of_inputs)
+    helps keep activations at a reasonable size
+    usually trains faster and more reliably
