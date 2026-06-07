@@ -11,9 +11,9 @@ def show_ui(training_data):
         bg="#454545"
     )
 
-    # random_index = random.randint(0, len(training_data) - 1)
+    random_index = random.randint(0, len(training_data) - 1)
 
-    image = training_data[0][0]
+    image = training_data[random_index][0]
 
     image = image.reshape(28, 28)
 
