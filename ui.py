@@ -3,6 +3,8 @@ import numpy as np
 from PIL import Image, ImageTk
 import random
 
+image_size = 900
+
 def show_ui(training_data):
     root = tk.Tk()
     root.attributes('-fullscreen', True)
@@ -10,6 +12,8 @@ def show_ui(training_data):
     root.configure(
         bg="#454545"
     )
+
+    screen_height = root.winfo_screenheight()
 
     random_index = random.randint(0, len(training_data) - 1)
 
@@ -21,7 +25,7 @@ def show_ui(training_data):
 
     pil_image = Image.fromarray(image)
 
-    pil_image = pil_image.resize((280, 280))
+    pil_image = pil_image.resize((image_size, image_size), Image.NEAREST)
 
     tk_image = ImageTk.PhotoImage(pil_image)
 
@@ -33,8 +37,8 @@ def show_ui(training_data):
     image_label.image = tk_image
 
     image_label.place(
-        x=0,
-        y=0
+        x=100,
+        y=(screen_height - image_size) / 2
     )
 
     lbl = tk.Label(
