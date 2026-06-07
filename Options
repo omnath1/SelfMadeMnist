@@ -9,3 +9,29 @@ improved:
     divides weights by sqrt(number_of_inputs)
     helps keep activations at a reasonable size
     usually trains faster and more reliably
+
+
+COST_FUNCTION
+
+quadratic:
+    original Chapter 1 cost function
+    output error is multiplied by sigmoid_prime
+    can learn slowly when neurons are saturated
+
+cross_entropy:
+    Chapter 3 improved cost function
+    output error is not multiplied by sigmoid_prime
+    helps the network learn faster when predictions are very wrong
+    usually works better for classification problems like MNIST
+
+
+DATASET_ARTIFICIAL_INCREASE
+
+none:
+    uses the original training images without changes
+
+image_shift:
+    randomly shifts each training image left, right, up, or down
+    creates slightly different versions of the same image during training
+    helps the network handle digits that are not perfectly centered
+    acts like having more varied training data without permanently changing the dataset

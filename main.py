@@ -1,5 +1,5 @@
 import mnist_loader
-import ui as ui
+# import ui as ui
 from network import network
 
 training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
