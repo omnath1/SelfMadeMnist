@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+.idea/
+download_mnist.py
+data/mnist.pkl.gz
