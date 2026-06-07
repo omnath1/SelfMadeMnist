@@ -25,6 +25,19 @@ cross_entropy:
     usually works better for classification problems like MNIST
 
 
+LMBDA
+
+0.0:
+    no L2 regularization
+    weights are updated using only gradient descent
+
+> 0.0:
+    enables L2 regularization (weight decay)
+    discourages very large weights
+    helps reduce overfitting
+    larger values apply stronger regularization
+
+
 DATASET_ARTIFICIAL_INCREASE
 
 none:
