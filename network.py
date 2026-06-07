@@ -17,7 +17,7 @@ class network(object):
 
         # invalid weight init so raise error
         else:
-            raise ValueError("weight_initialization must be 'standard' or 'improved'")
+            raise ValueError("weight_initialization must be 'random' or 'improved'")
 
     def feedforward(self, a):
         """ Return the output of the network if "a" is input"""
@@ -25,7 +25,7 @@ class network(object):
             a = sigmoid(np.dot(w, a) + b)
         return a
 
-    def SGD(self, training_data, epochs, mini_batch_size, eta, cost_function="quadratic", test_data=None, random_stat=None):
+    def SGD(self, training_data, epochs, mini_batch_size, eta, cost_function="quadratic", image_shift=0, test_data=None, random_stat=None):
         if test_data:
             n_test = len(test_data)
 
@@ -36,7 +36,7 @@ class network(object):
             mini_batches = [training_data[k:k + mini_batch_size] for k in range(0, n, mini_batch_size)]
 
             for mini_batch in mini_batches:
-                self.update_mini_batch(mini_batch, eta, cost_function)
+                self.update_mini_batch(mini_batch, eta, cost_function, image_shift)
 
             if test_data:
                 correct = self.evaluate(test_data)
@@ -57,7 +57,7 @@ class network(object):
 
             return final_accuracy, final_correct
 
-    def update_mini_batch(self, mini_batch, eta, cost_function):
+    def update_mini_batch(self, mini_batch, eta, cost_function, image_shift):
         """Update the network’s weights and biases by applying gradient descent
         using backpropagation to a single mini batch. The "mini_batch" is a list
         of tuples "(x, y)", and "eta" is the learning rate"""
@@ -65,6 +65,8 @@ class network(object):
         nabla_w = [np.zeros(w.shape) for w in self.weights]
 
         for x, y in mini_batch:
+            x = random_shift_image(x, max_shift=image_shift)
+
             delta_nabla_b, delta_nabla_w = self.backprop(x, y, cost_function)
             nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
@@ -89,11 +91,11 @@ class network(object):
         if cost_function == "quadratic":
             delta = self.cost_derivative(activations[-1], y) * sigmoid_prime(zs[-1])
 
-        elif cost_function == "cross entropy":
+        elif cost_function == "cross_entropy":
             delta = self.cost_derivative(activations[-1], y)
 
         else:
-            raise ValueError("cost_function must be 'quadratic' or 'cross entropy'")
+            raise ValueError("cost_function must be 'quadratic' or 'cross_entropy'")
 
         nabla_b[-1] = delta
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
@@ -114,6 +116,32 @@ class network(object):
     def cost_derivative(self, output_activation, y):
         return (output_activation - y)
 
+def random_shift_image(x, max_shift=1):
+    image = x.reshape(28, 28)
+
+    dx = random.randint(-max_shift, max_shift)
+    dy = random.randint(-max_shift, max_shift)
+
+    shifted = np.zeros((28, 28))
+
+    old_x_start = max(0, -dx)
+    old_x_end = min(28, 28 - dx)
+
+    old_y_start = max(0, -dy)
+    old_y_end = min(28, 28 - dy)
+
+    new_x_start = max(0, dx)
+    new_x_end = min(28, 28 + dx)
+
+    new_y_start = max(0, dy)
+    new_y_end = min(28, 28 + dy)
+
+    shifted[new_y_start:new_y_end, new_x_start:new_x_end] = image[
+        old_y_start:old_y_end,
+        old_x_start:old_x_end
+    ]
+
+    return shifted.reshape(784, 1)
 
 def sigmoid(z):
     return 1.0/(1.0 + np.exp(-z))
