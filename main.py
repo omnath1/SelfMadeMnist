@@ -19,8 +19,6 @@ WEIGHT_INITIALIZATION = "improved"
 # options: quadratic, cross_entropy
 COST_FUNCTION = "cross_entropy"
 
-L2_REGULARIZATION = True
-
 net = network([INPUT_NEURON, HIDDEN_NEURON, OUTPUT_NEURON], weight_initialization=WEIGHT_INITIALIZATION)
 
 net.SGD(
@@ -31,7 +29,6 @@ net.SGD(
     lmbda=LMBDA,
     cost_function=COST_FUNCTION,
     image_shift=IMAGE_SHIFT,
-    l2=L2_REGULARIZATION,
     test_data=test_data,
 )
 

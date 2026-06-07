@@ -25,7 +25,7 @@ class network(object):
             a = sigmoid(np.dot(w, a) + b)
         return a
 
-    def SGD(self, training_data, epochs, mini_batch_size, eta, lmbda=0.0, cost_function="quadratic", image_shift=0, l2=False, test_data=None, random_stat=None):
+    def SGD(self, training_data, epochs, mini_batch_size, eta, lmbda=0.0, cost_function="quadratic", image_shift=0, test_data=None, random_stat=None):
         if test_data:
             n_test = len(test_data)
 
@@ -36,7 +36,7 @@ class network(object):
             mini_batches = [training_data[k:k + mini_batch_size] for k in range(0, n, mini_batch_size)]
 
             for mini_batch in mini_batches:
-                self.update_mini_batch(mini_batch, eta, cost_function, image_shift, l2, lmbda, n)
+                self.update_mini_batch(mini_batch, eta, cost_function, image_shift, lmbda, n)
 
             if test_data:
                 correct = self.evaluate(test_data)
@@ -57,7 +57,7 @@ class network(object):
 
             return final_accuracy, final_correct
 
-    def update_mini_batch(self, mini_batch, eta, cost_function, image_shift, l2, lmbda, n):
+    def update_mini_batch(self, mini_batch, eta, cost_function, image_shift, lmbda, n):
         """Update the network’s weights and biases by applying gradient descent
         using backpropagation to a single mini batch. The "mini_batch" is a list
         of tuples "(x, y)", and "eta" is the learning rate"""
@@ -71,11 +71,7 @@ class network(object):
             nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
 
-        if not l2:
-            self.weights = [w - (eta/len(mini_batch)) * nw for w, nw in zip(self.weights, nabla_w)]
-
-        else:
-            self.weights = [(1 - eta * (lmbda / n)) * w - (eta / len(mini_batch)) * nw for w, nw in zip(self.weights, nabla_w)]
+        self.weights = [(1 - eta * (lmbda / n)) * w - (eta / len(mini_batch)) * nw for w, nw in zip(self.weights, nabla_w)]
 
         self.biases = [b - (eta / len(mini_batch)) * nb for b, nb in zip(self.biases, nabla_b)]
 
