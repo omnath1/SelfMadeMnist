@@ -10,6 +10,7 @@ OUTPUT_NEURON = 10
 EPOCHS = 30
 MINI_BATCH_SIZE = 10
 ETA = 0.5
+LMBDA = 5.0
 IMAGE_SHIFT = 1
 
 # options: random, improved
@@ -18,6 +19,8 @@ WEIGHT_INITIALIZATION = "improved"
 # options: quadratic, cross_entropy
 COST_FUNCTION = "cross_entropy"
 
+L2_REGULARIZATION = True
+
 net = network([INPUT_NEURON, HIDDEN_NEURON, OUTPUT_NEURON], weight_initialization=WEIGHT_INITIALIZATION)
 
 net.SGD(
@@ -25,8 +28,10 @@ net.SGD(
     epochs=EPOCHS,
     mini_batch_size=MINI_BATCH_SIZE,
     eta=ETA,
+    lmbda=LMBDA,
     cost_function=COST_FUNCTION,
     image_shift=IMAGE_SHIFT,
+    l2=L2_REGULARIZATION,
     test_data=test_data,
 )
 
