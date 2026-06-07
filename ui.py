@@ -52,13 +52,13 @@ def return_label(root, image_num, screen_height):
     # place label in the window
     digit_label = tk.Label(
         root,
-        text=image_num,
+        text=f"Correct number: {image_num}",
         font=TITLE_FONT,
         bg=BG_COLOR
     )
     digit_label.place(
-        x=1700,
-        y=(screen_height - IMAGE_SIZE) / 2
+        x=300,
+        y=((screen_height - IMAGE_SIZE) / 2) + IMAGE_SIZE + 3
     )
 
     return digit_label
@@ -101,7 +101,21 @@ def update_image(training_data, image_label, digit_label):
     image_label.configure(image=tk_image)
     image_label.image = tk_image
 
-    digit_label.configure(text=image_num)
+    digit_label.configure(text=f"Correct number: {image_num}")
+
+def next_image_button(root, training_data, image_label, digit_label, screen_height):
+    next_button = tk.Button(
+        root,
+        text="Next Image",
+        width=12,
+        height=2,
+        command=lambda: update_image(training_data, image_label, digit_label)
+    )
+
+    next_button.place(
+        x=100,
+        y=((screen_height - IMAGE_SIZE) / 2) + IMAGE_SIZE
+    )
 
 def show_ui(training_data):
     # create a window
@@ -124,20 +138,14 @@ def show_ui(training_data):
     # call image function
     pil_image, image_num = prepare_random_mnist_image(training_data)
 
+    # get the image
     image_label = return_image(root, pil_image, screen_height)
 
+    # get image label
     digit_label = return_label(root, image_num, screen_height)
 
-    next_button = tk.Button(
-        root,
-        text="Next Image",
-        command=lambda: update_image(training_data, image_label, digit_label)
-    )
-
-    next_button.place(
-        x=1700,
-        y=((screen_height - IMAGE_SIZE) / 2) + 100
-    )
+    # create button that gets another random image
+    next_image_button(root, training_data, image_label, digit_label, screen_height)
 
     # run the window
     root.mainloop()
