@@ -17,6 +17,8 @@ def show_ui(training_data):
 
     random_index = random.randint(0, len(training_data) - 1)
 
+    image_num = np.argmax(training_data[random_index][1])
+
     image = training_data[random_index][0]
 
     image = image.reshape(28, 28)
@@ -48,6 +50,17 @@ def show_ui(training_data):
         bg="#454545"
     )
     lbl.pack()
+
+    lbl = tk.Label(
+        root,
+        text=image_num,
+        font=("Arial", 32, "bold"),
+        bg="#454545"
+    )
+    lbl.place(
+        x=1700,
+        y=(screen_height - image_size) / 2
+    )
 
     exit_button = tk.Button(
         root,
