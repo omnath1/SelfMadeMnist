@@ -48,7 +48,7 @@ def create_title(root):
     )
     title.pack()
 
-def create_label(root, image_num, screen_height):
+def return_label(root, image_num, screen_height):
     # place label in the window
     digit_label = tk.Label(
         root,
@@ -61,7 +61,9 @@ def create_label(root, image_num, screen_height):
         y=(screen_height - IMAGE_SIZE) / 2
     )
 
-def create_image(root, pil_image, screen_height):
+    return digit_label
+
+def return_image(root, pil_image, screen_height):
     # convert Pillow image to a Tkinter-compatible image
     tk_image = ImageTk.PhotoImage(pil_image)
 
@@ -78,6 +80,8 @@ def create_image(root, pil_image, screen_height):
         y=(screen_height - IMAGE_SIZE) / 2
     )
 
+    return image_label
+
 def create_exit_button(root):
     # exit button
     exit_button = tk.Button(
@@ -88,6 +92,16 @@ def create_exit_button(root):
     exit_button.place(
         x=2192
     )
+
+def update_image(training_data, image_label, digit_label):
+    pil_image, image_num = prepare_random_mnist_image(training_data)
+
+    tk_image = ImageTk.PhotoImage(pil_image)
+
+    image_label.configure(image=tk_image)
+    image_label.image = tk_image
+
+    digit_label.configure(text=image_num)
 
 def show_ui(training_data):
     # create a window
@@ -110,11 +124,20 @@ def show_ui(training_data):
     # call image function
     pil_image, image_num = prepare_random_mnist_image(training_data)
 
-    # show the image
-    create_image(root, pil_image, screen_height)
+    image_label = return_image(root, pil_image, screen_height)
 
-    # create label
-    create_label(root, image_num, screen_height)
+    digit_label = return_label(root, image_num, screen_height)
+
+    next_button = tk.Button(
+        root,
+        text="Next Image",
+        command=lambda: update_image(training_data, image_label, digit_label)
+    )
+
+    next_button.place(
+        x=1700,
+        y=((screen_height - IMAGE_SIZE) / 2) + 100
+    )
 
     # run the window
     root.mainloop()
