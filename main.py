@@ -14,6 +14,9 @@ ETA = 0.5
 # options: random, improved
 WEIGHT_INITIALIZATION = "improved"
 
+# options: quadratic, cross entropy
+COST_FUNCTION = "cross entropy"
+
 net = network([INPUT_NEURON, HIDDEN_NEURON, OUTPUT_NEURON], weight_initialization=WEIGHT_INITIALIZATION)
 
 net.SGD(
@@ -21,7 +24,8 @@ net.SGD(
     epochs=EPOCHS,
     mini_batch_size=MINI_BATCH_SIZE,
     eta=ETA,
-    test_data=test_data
+    cost_function=COST_FUNCTION,
+    test_data=test_data,
 )
 
 # enable to show ui
