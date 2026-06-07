@@ -12,7 +12,7 @@ MINI_BATCH_SIZE = 10
 ETA = 0.5
 
 # options: random, improved
-WEIGHT_INITIALIZATION = "random"
+WEIGHT_INITIALIZATION = "improved"
 
 net = network([INPUT_NEURON, HIDDEN_NEURON, OUTPUT_NEURON], weight_initialization=WEIGHT_INITIALIZATION)
 
