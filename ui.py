@@ -2,6 +2,7 @@ import tkinter as tk
 import numpy as np
 from PIL import Image, ImageTk
 import random
+import threading
 
 BG_COLOR = "#454545"
 TITLE_FONT = ("Arial", 32, "bold")
@@ -203,9 +204,10 @@ def train_model_button(root, train_model):
         width=20,
         height=2,
         font=TITLE_FONT,
-        command=lambda: (
-            train_model()
-        )
+        command=lambda: threading.Thread(
+            target=train_model,
+            daemon=True
+        ).start()
     )
 
     # place the exit button in the window

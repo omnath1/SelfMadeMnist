@@ -22,16 +22,23 @@ COST_FUNCTION = "cross_entropy"
 # options: sigmoid, softmax
 OUTPUT_ACTIVATION = "softmax"
 
+current_network = None
+current_training_id = 0
 
 def train_model():
-    net = network(
+    global current_network, current_training_id
+
+    current_training_id += 1
+    my_training_id = current_training_id
+
+    current_network = network(
         [INPUT_NEURON, HIDDEN_NEURON,
         OUTPUT_NEURON],
         weight_initialization=WEIGHT_INITIALIZATION,
         output_activation=OUTPUT_ACTIVATION
     )
 
-    net.SGD(
+    current_network.SGD(
         training_data=training_data,
         epochs=EPOCHS,
         mini_batch_size=MINI_BATCH_SIZE,
@@ -40,6 +47,8 @@ def train_model():
         cost_function=COST_FUNCTION,
         image_shift=IMAGE_SHIFT,
         test_data=test_data,
+        training_id=my_training_id,
+        should_stop=lambda training_id: training_id != current_training_id
     )
 
 
