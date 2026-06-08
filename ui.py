@@ -777,12 +777,45 @@ def create_drawing_canvas(root, screen_height):
     return drawing_canvas
 
 
+def setup_drawing(canvas):
+    last_x = None
+    last_y = None
+
+    def start_draw(event):
+        nonlocal last_x, last_y
+
+        last_x = event.x
+        last_y = event.y
+
+    def draw(event):
+        nonlocal last_x, last_y
+
+        canvas.create_line(
+            last_x,
+            last_y,
+            event.x,
+            event.y,
+            fill="white",
+            width=35,
+            capstyle=tk.ROUND,
+            smooth=True
+        )
+
+        last_x = event.x
+        last_y = event.y
+
+    canvas.bind("<Button-1>", start_draw)
+    canvas.bind("<B1-Motion>", draw)
+
+
 def open_test_page(root, training_data, train_model, screen_height):
     clear_current_page()
 
     create_test_title(root)
 
-    create_drawing_canvas(root, screen_height)
+    drawing_canvas = create_drawing_canvas(root, screen_height)
+
+    setup_drawing(drawing_canvas)
 
     create_back_button(root, training_data, train_model)
 
