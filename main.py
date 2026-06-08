@@ -5,7 +5,7 @@ from network import network
 training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
 
 INPUT_NEURON = 784
-HIDDEN_NEURON = 10
+HIDDEN_NEURON = 128
 OUTPUT_NEURON = 10
 EPOCHS = 30
 MINI_BATCH_SIZE = 10
