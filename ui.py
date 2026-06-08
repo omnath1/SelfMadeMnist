@@ -384,7 +384,7 @@ def create_image_shift_entry(root):
         width=10
     )
 
-    image_shift_entry.insert(0, "0")
+    image_shift_entry.insert(0, "1")
 
     image_shift_entry.place(
         relx=0.3,
@@ -394,7 +394,38 @@ def create_image_shift_entry(root):
     return image_shift_entry
 
 
-def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry, lmbda_entry, image_shift_entry):
+def create_cost_function_dropdown(root):
+    cost_function_label = tk.Label(
+        root,
+        text="Cost function:",
+        font=("Arial", 18),
+        bg=BG_COLOR
+    )
+
+    cost_function_label.place(
+        relx=0.1,
+        y=650
+    )
+
+    cost_function_var = tk.StringVar(root)
+    cost_function_var.set("cross_entropy")
+
+    cost_function_dropdown = tk.OptionMenu(
+        root,
+        cost_function_var,
+        "quadratic",
+        "cross_entropy"
+    )
+
+    cost_function_dropdown.place(
+        relx=0.1,
+        y=700
+    )
+
+    return cost_function_var
+
+
+def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry, lmbda_entry, image_shift_entry, cost_function_entry):
     train_model_button = tk.Button(
         root,
         text="Train Model",
@@ -409,7 +440,8 @@ def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_en
                 int(mini_batch_size_entry.get()),
                 float(eta_entry.get()),
                 float(lmbda_entry.get()),
-                int(image_shift_entry.get())
+                int(image_shift_entry.get()),
+                cost_function_entry.get()
             ),
             daemon=True
         ).start()
@@ -437,6 +469,8 @@ def open_training_page(root, menu_buttons, train_model):
 
     image_shift_entry = create_image_shift_entry(root)
 
+    cost_function = create_cost_function_dropdown(root)
+
     clear_menu(menu_buttons)
 
     train_model_button(
@@ -447,7 +481,8 @@ def open_training_page(root, menu_buttons, train_model):
         mini_batch_size_entry,
         eta_entry,
         lmbda_entry,
-        image_shift_entry
+        image_shift_entry,
+        cost_function
     )
 
 

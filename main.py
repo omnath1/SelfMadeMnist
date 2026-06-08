@@ -10,16 +10,13 @@ OUTPUT_NEURON = 10
 # options: random, improved
 WEIGHT_INITIALIZATION = "improved"
 
-# options: quadratic, cross_entropy
-COST_FUNCTION = "cross_entropy"
-
 # options: sigmoid, softmax
-OUTPUT_ACTIVATION = "softmax"
+OUTPUT_ACTIVATION = "sigmoid"
 
 current_network = None
 current_training_id = 0
 
-def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta, lmbda, image_shift):
+def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta, lmbda, image_shift, cost_function):
     global current_network, current_training_id
 
     current_training_id += 1
@@ -38,7 +35,7 @@ def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta, lmbda,
         mini_batch_size=mini_batch_size,
         eta=eta,
         lmbda=lmbda,
-        cost_function=COST_FUNCTION,
+        cost_function=cost_function,
         image_shift=image_shift,
         test_data=test_data,
         training_id=my_training_id,
