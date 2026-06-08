@@ -7,7 +7,14 @@ import threading
 BG_COLOR = "#454545"
 TITLE_FONT = ("Arial", 32, "bold")
 IMAGE_SIZE = 900
-menu_buttons = []
+current_page_widgets = []
+
+
+def clear_current_page():
+    for widget in current_page_widgets:
+        widget.destroy()
+
+    current_page_widgets.clear()
 
 
 def create_console(root):
@@ -25,17 +32,14 @@ def create_console(root):
         height=screen_height *0.77
     )
 
+    current_page_widgets.append(console)
+
     return console
 
 
 def write_to_console(console, message):
     console.insert(tk.END, message + "\n")
     console.see(tk.END)
-
-
-def clear_menu(menu_buttons):
-    for button in menu_buttons:
-        button.destroy()
 
 
 def screen_size(root):
@@ -162,6 +166,8 @@ def display_first_image(root, training_data, screen_height):
         y=(screen_height - IMAGE_SIZE) / 2
     )
 
+    current_page_widgets.append(image_label)
+
     # create the label that shows the correct number
     digit_label = tk.Label(
         root,
@@ -176,10 +182,12 @@ def display_first_image(root, training_data, screen_height):
         y=((screen_height - IMAGE_SIZE) / 2) + IMAGE_SIZE + 3
     )
 
+    current_page_widgets.append(digit_label)
+
     return image_label, digit_label
 
 
-def next_image_button(root, training_data, image_label, digit_label, screen_height):# create a button that calls update_image() when clicked
+def next_image_button(root, training_data, image_label, digit_label, screen_height, current_page_widgets):# create a button that calls update_image() when clicked
     next_button = tk.Button(
         root,
         text="Next Image",
@@ -194,24 +202,31 @@ def next_image_button(root, training_data, image_label, digit_label, screen_heig
         y=((screen_height - IMAGE_SIZE) / 2) + IMAGE_SIZE
     )
 
+    current_page_widgets.append(next_button)
 
-def show_image_window(root, training_data, screen_height):
+
+def show_image_window(root, training_data, screen_height, current_page_widgets, train_model):
     image_label, digit_label = display_first_image(root, training_data, screen_height)
 
-    next_image_button(root, training_data,image_label, digit_label, screen_height)
+    next_image_button(root, training_data,image_label, digit_label, screen_height, current_page_widgets)
+
+    create_back_button(root, training_data, train_model)
 
 
-def image_view_button(root, training_data, screen_height, menu_buttons):
+def image_view_button(root, training_data, screen_height, current_page_widgets, train_model):
     image_view_button = tk.Button(
         root,
         text="Show Images",
         width=20,
         height=3,
         font=TITLE_FONT,
-        command=lambda: (clear_menu(menu_buttons), show_image_window(root, training_data, screen_height))
+        command=lambda: (
+            clear_current_page(),
+            show_image_window(root, training_data, screen_height, current_page_widgets, train_model)
+        )
     )
 
-    menu_buttons.append(image_view_button)
+    current_page_widgets.append(image_view_button)
 
     # place the exit button in the window
     image_view_button.place(
@@ -246,6 +261,9 @@ def create_hidden_neuron_entry(root):
         y=250
     )
 
+    current_page_widgets.append(hidden_neuron_entry)
+    current_page_widgets.append(hidden_neuron_label)
+
     return hidden_neuron_entry
 
 
@@ -274,6 +292,9 @@ def create_epoch_entry(root):
         relx=0.3,
         y=250
     )
+
+    current_page_widgets.append(epoch_entry)
+    current_page_widgets.append(epoch_label)
 
     return epoch_entry
 
@@ -304,6 +325,9 @@ def create_mini_batch_size_entry(root):
         y=400
     )
 
+    current_page_widgets.append(mini_batch_size_entry)
+    current_page_widgets.append(mini_batch_size_label)
+
     return mini_batch_size_entry
 
 
@@ -332,6 +356,9 @@ def create_eta_entry(root):
         relx=0.1,
         y=400
     )
+
+    current_page_widgets.append(eta_label)
+    current_page_widgets.append(eta_entry)
 
     return eta_entry
 
@@ -362,6 +389,9 @@ def create_lmbda_entry(root):
         y=550
     )
 
+    current_page_widgets.append(lmbda_label)
+    current_page_widgets.append(lmbda_entry)
+
     return lmbda_entry
 
 
@@ -390,6 +420,9 @@ def create_image_shift_entry(root):
         relx=0.3,
         y=550
     )
+
+    current_page_widgets.append(image_shift_entry)
+    current_page_widgets.append(image_shift_label)
 
     return image_shift_entry
 
@@ -422,6 +455,9 @@ def create_cost_function_dropdown(root):
         y=700
     )
 
+    current_page_widgets.append(cost_function_dropdown)
+    current_page_widgets.append(cost_function_label)
+
     return cost_function_var
 
 
@@ -452,6 +488,9 @@ def create_output_activation_dropdown(root):
         relx=0.3,
         y=700
     )
+
+    current_page_widgets.append(output_activation_dropdown)
+    current_page_widgets.append(output_activation_label)
 
     return output_activation_var
 
@@ -484,6 +523,9 @@ def create_weight_init_dropdown(root):
         y=850
     )
 
+    current_page_widgets.append(output_activation_dropdown)
+    current_page_widgets.append(weight_init_label)
+
     return weight_init_var
 
 
@@ -515,6 +557,9 @@ def create_save_model_toggle(root):
         relx=0.3,
         y=850
     )
+
+    current_page_widgets.append(model_name_entry)
+    current_page_widgets.append(save_model_toggle)
 
     return save_model_var, model_name_entry
 
@@ -551,8 +596,12 @@ def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_en
         y=1200
     )
 
+    current_page_widgets.append(train_model_button)
 
-def open_training_page(root, menu_buttons, train_model):
+
+def open_training_page(root, training_data, current_page_widgets, train_model):
+    clear_current_page()
+
     console = create_console(root)
 
     hidden_neuron_entry = create_hidden_neuron_entry(root)
@@ -575,8 +624,6 @@ def open_training_page(root, menu_buttons, train_model):
 
     save_model_var, model_name_entry = create_save_model_toggle(root)
 
-    clear_menu(menu_buttons)
-
     train_model_button(
         root, train_model,
         console,
@@ -593,8 +640,10 @@ def open_training_page(root, menu_buttons, train_model):
         model_name_entry
     )
 
+    create_back_button(root, training_data, train_model)
 
-def training_page_button(root, screen_width, menu_buttons, train_model):
+
+def training_page_button(root, training_data, screen_width, current_page_widgets, train_model):
     training_page_button = tk.Button(
         root,
         text="Train Model",
@@ -603,12 +652,13 @@ def training_page_button(root, screen_width, menu_buttons, train_model):
         font=TITLE_FONT,
         command=lambda: open_training_page(
             root,
-            menu_buttons,
+            training_data,
+            current_page_widgets,
             train_model
         )
     )
 
-    menu_buttons.append(training_page_button)
+    current_page_widgets.append(training_page_button)
 
     # place the exit button in the window
     training_page_button.place(
@@ -617,6 +667,45 @@ def training_page_button(root, screen_width, menu_buttons, train_model):
         y=400,
         anchor="ne"
     )
+
+
+def show_main_menu(root, training_data, train_model):
+    screen_width, screen_height = screen_size(root)
+
+    clear_current_page()
+
+    image_view_button(
+        root,
+        training_data,
+        screen_height,
+        current_page_widgets,
+        train_model
+    )
+
+    training_page_button(
+        root,
+        training_data,
+        screen_width,
+        current_page_widgets,
+        train_model
+    )
+
+
+def create_back_button(root, training_data, train_model):
+    back_button = tk.Button(
+        root,
+        text="Back",
+        width=12,
+        height=2,
+        command=lambda: show_main_menu(root, training_data, train_model)
+    )
+
+    back_button.place(
+        x=0,
+        y=0
+    )
+
+    current_page_widgets.append(back_button)
 
 
 def show_ui(training_data, train_model):
@@ -638,10 +727,22 @@ def show_ui(training_data, train_model):
     create_title(root)
 
     # create image view option button
-    image_view_button(root, training_data, screen_height, menu_buttons)
+    image_view_button(
+        root,
+        training_data,
+        screen_height,
+        current_page_widgets,
+        train_model
+    )
 
     # create train model button
-    training_page_button(root, screen_width, menu_buttons, train_model)
+    training_page_button(
+        root,
+        training_data,
+        screen_width,
+        current_page_widgets,
+        train_model
+    )
 
     # run the window
     root.mainloop()
