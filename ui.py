@@ -336,7 +336,65 @@ def create_eta_entry(root):
     return eta_entry
 
 
-def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry):
+def create_lmbda_entry(root):
+    lmbda_label = tk.Label(
+        root,
+        text="Lmbda:",
+        font=("Arial", 18),
+        bg=BG_COLOR
+    )
+
+    lmbda_label.place(
+        relx=0.1,
+        y=500
+    )
+
+    lmbda_entry = tk.Entry(
+        root,
+        font=("Arial", 18),
+        width=10
+    )
+
+    lmbda_entry.insert(0, "5.0")
+
+    lmbda_entry.place(
+        relx=0.1,
+        y=550
+    )
+
+    return lmbda_entry
+
+
+def create_image_shift_entry(root):
+    image_shift_label = tk.Label(
+        root,
+        text="Image shift:",
+        font=("Arial", 18),
+        bg=BG_COLOR
+    )
+
+    image_shift_label.place(
+        relx=0.3,
+        y=500
+    )
+
+    image_shift_entry = tk.Entry(
+        root,
+        font=("Arial", 18),
+        width=10
+    )
+
+    image_shift_entry.insert(0, "0")
+
+    image_shift_entry.place(
+        relx=0.3,
+        y=550
+    )
+
+    return image_shift_entry
+
+
+def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry, lmbda_entry, image_shift_entry):
     train_model_button = tk.Button(
         root,
         text="Train Model",
@@ -349,7 +407,9 @@ def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_en
                 int(hidden_neuron_entry.get()),
                 int(epoch_entry.get()),
                 int(mini_batch_size_entry.get()),
-                float(eta_entry.get())
+                float(eta_entry.get()),
+                float(lmbda_entry.get()),
+                int(image_shift_entry.get())
             ),
             daemon=True
         ).start()
@@ -373,9 +433,22 @@ def open_training_page(root, menu_buttons, train_model):
 
     eta_entry = create_eta_entry(root)
 
+    lmbda_entry = create_lmbda_entry(root)
+
+    image_shift_entry = create_image_shift_entry(root)
+
     clear_menu(menu_buttons)
 
-    train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry)
+    train_model_button(
+        root, train_model,
+        console,
+        hidden_neuron_entry,
+        epoch_entry,
+        mini_batch_size_entry,
+        eta_entry,
+        lmbda_entry,
+        image_shift_entry
+    )
 
 
 def training_page_button(root, screen_width, menu_buttons, train_model):
