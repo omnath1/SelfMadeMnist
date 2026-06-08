@@ -6,6 +6,12 @@ import random
 BG_COLOR = "#454545"
 TITLE_FONT = ("Arial", 32, "bold")
 IMAGE_SIZE = 900
+menu_buttons = []
+
+
+def clear_menu(menu_buttons):
+    for button in menu_buttons:
+        button.destroy()
 
 
 def screen_size(root):
@@ -171,15 +177,17 @@ def show_image_window(root, training_data, screen_height):
     next_image_button(root, training_data,image_label, digit_label, screen_height)
 
 
-def image_view_button(root, training_data, screen_height):
+def image_view_button(root, training_data, screen_height, menu_buttons):
     image_view_button = tk.Button(
         root,
         text="Show Images",
         width=20,
         height=3,
         font=TITLE_FONT,
-        command=lambda: (image_view_button.destroy(), show_image_window(root, training_data, screen_height))
+        command=lambda: (clear_menu(menu_buttons), show_image_window(root, training_data, screen_height))
     )
+
+    menu_buttons.append(image_view_button)
 
     # place the exit button in the window
     image_view_button.place(
@@ -188,7 +196,50 @@ def image_view_button(root, training_data, screen_height):
     )
 
 
-def show_ui(training_data):
+def train_model_button(root, train_model):
+    train_model_button = tk.Button(
+        root,
+        text="Train Model",
+        width=20,
+        height=2,
+        font=TITLE_FONT,
+        command=lambda: (
+            train_model()
+        )
+    )
+
+    # place the exit button in the window
+    train_model_button.place(
+        relx=0.1,
+        y=1200
+    )
+
+
+def training_page_button(root, screen_width, menu_buttons, train_model):
+    training_page_button = tk.Button(
+        root,
+        text="Train Model",
+        width=20,
+        height=3,
+        font=TITLE_FONT,
+        command=lambda: (
+            clear_menu(menu_buttons),
+            train_model_button(root, train_model)
+        )
+    )
+
+    menu_buttons.append(training_page_button)
+
+    # place the exit button in the window
+    training_page_button.place(
+        relx=1.0,
+        x=-300,
+        y=400,
+        anchor="ne"
+    )
+
+
+def show_ui(training_data, train_model):
     # create the main window
     root = tk.Tk()
     root.attributes('-fullscreen', True)
@@ -207,9 +258,10 @@ def show_ui(training_data):
     create_title(root)
 
     # create image view option button
-    image_view_button(root, training_data, screen_height)
+    image_view_button(root, training_data, screen_height, menu_buttons)
 
-
+    # create train model button
+    training_page_button(root, screen_width, menu_buttons, train_model)
 
     # run the window
     root.mainloop()
