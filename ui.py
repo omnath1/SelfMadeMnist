@@ -690,6 +690,10 @@ def show_main_menu(root, training_data, train_model):
         train_model
     )
 
+    test_page_button(
+        root
+    )
+
 
 def create_back_button(root, training_data, train_model):
     back_button = tk.Button(
@@ -706,6 +710,30 @@ def create_back_button(root, training_data, train_model):
     )
 
     current_page_widgets.append(back_button)
+
+
+def test_page_button(root):
+    test_page_button = tk.Button(
+        root,
+        text="Test Model",
+        width=20,
+        height=3,
+        font=TITLE_FONT,
+        command=lambda: open_training_page(
+            root,
+            training_data,
+            current_page_widgets,
+            train_model
+        )
+    )
+
+    current_page_widgets.append(test_page_button)
+
+    # place the exit button in the window
+    test_page_button.place(
+        x=300,
+        y=800
+    )
 
 
 def show_ui(training_data, train_model):
@@ -742,6 +770,10 @@ def show_ui(training_data, train_model):
         screen_width,
         current_page_widgets,
         train_model
+    )
+
+    test_page_button(
+        root
     )
 
     # run the window
