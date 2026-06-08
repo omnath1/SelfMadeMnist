@@ -9,19 +9,53 @@ IMAGE_SIZE = 900
 
 
 def screen_size(root):
-    """
-    Gets the width and height of the user's screen.
-
-    :param root: the main Tkinter window
-    :return: the screen width and screen height
-    """
-
     # get screen dimensions
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
 
     # return the screen dimensions so other functions can use them
     return screen_width, screen_height
+
+
+def create_exit_button(root):
+    """
+    Creates and places the exit button.
+
+    :param root: the main Tkinter window
+    :return: nothing
+    """
+
+    # create the exit button
+    exit_button = tk.Button(
+        root,
+        text="Exit",
+        command=root.destroy
+    )
+
+    # place the exit button in the window
+    exit_button.place(
+        x=2192
+    )
+
+
+def create_title(root):
+    """
+    Creates and places the title text at the top of the window.
+
+    :param root: the main Tkinter window
+    :return: nothing
+    """
+
+    # create the title label
+    title = tk.Label(
+        root,
+        text="Mnist Training",
+        font=TITLE_FONT,
+        bg=BG_COLOR
+    )
+
+    # place the title in the window
+    title.pack()
 
 
 def prepare_random_mnist_image(training_data):
@@ -60,63 +94,25 @@ def prepare_random_mnist_image(training_data):
     return pil_image, image_num
 
 
-def create_title(root):
-    """
-    Creates and places the title text at the top of the window.
+def update_image(training_data, image_label, digit_label):
+    # get a new random prepared MNIST image and its correct number
+    pil_image, image_num = prepare_random_mnist_image(training_data)
 
-    :param root: the main Tkinter window
-    :return: nothing
-    """
+    # convert the new Pillow image into a Tkinter-compatible image
+    tk_image = ImageTk.PhotoImage(pil_image)
 
-    # create the title label
-    title = tk.Label(
-        root,
-        text="Mnist Training",
-        font=TITLE_FONT,
-        bg=BG_COLOR
-    )
+    # update the existing image label with the new image
+    image_label.configure(image=tk_image)
 
-    # place the title in the window
-    title.pack()
+    # keep a reference to the new image so Python does not delete it
+    image_label.image = tk_image
+
+    # update the existing digit label with the new correct number
+    digit_label.configure(text=f"Correct number: {image_num}")
 
 
-def return_label(root, image_num, screen_height):
-    """
-    Creates and places the label showing the correct digit.
-
-    :param root: the main Tkinter window
-    :param image_num: the correct digit for the current MNIST image
-    :param screen_height: the height of the user's screen
-    :return: the digit label so it can be updated later
-    """
-
-    # create the label that shows the correct number
-    digit_label = tk.Label(
-        root,
-        text=f"Correct number: {image_num}",
-        font=TITLE_FONT,
-        bg=BG_COLOR
-    )
-
-    # place the label below the image
-    digit_label.place(
-        x=300,
-        y=((screen_height - IMAGE_SIZE) / 2) + IMAGE_SIZE + 3
-    )
-
-    # return the label so update_image() can change its text later
-    return digit_label
-
-
-def return_image(root, pil_image, screen_height):
-    """
-    Creates and places the image label that displays the MNIST image.
-
-    :param root: the main Tkinter window
-    :param pil_image: the prepared Pillow image
-    :param screen_height: the height of the user's screen
-    :return: the image label so it can be updated later
-    """
+def display_first_image(root, training_data, screen_height):
+    pil_image, image_num = prepare_random_mnist_image(training_data)
 
     # convert the Pillow image to a Tkinter-compatible image
     tk_image = ImageTk.PhotoImage(pil_image)
@@ -136,70 +132,24 @@ def return_image(root, pil_image, screen_height):
         y=(screen_height - IMAGE_SIZE) / 2
     )
 
-    # return the image label so update_image() can change the image later
-    return image_label
-
-
-def create_exit_button(root):
-    """
-    Creates and places the exit button.
-
-    :param root: the main Tkinter window
-    :return: nothing
-    """
-
-    # create the exit button
-    exit_button = tk.Button(
+    # create the label that shows the correct number
+    digit_label = tk.Label(
         root,
-        text="Exit",
-        command=root.destroy
+        text=f"Correct number: {image_num}",
+        font=TITLE_FONT,
+        bg=BG_COLOR
     )
 
-    # place the exit button in the window
-    exit_button.place(
-        x=2192
+    # place the label below the image
+    digit_label.place(
+        x=300,
+        y=((screen_height - IMAGE_SIZE) / 2) + IMAGE_SIZE + 3
     )
 
-
-def update_image(training_data, image_label, digit_label):
-    """
-    Gets a new random MNIST image and updates the existing image and digit label.
-
-    :param training_data: the MNIST training data
-    :param image_label: the label currently displaying the MNIST image
-    :param digit_label: the label currently displaying the correct digit
-    :return: nothing
-    """
-
-    # get a new random prepared MNIST image and its correct number
-    pil_image, image_num = prepare_random_mnist_image(training_data)
-
-    # convert the new Pillow image into a Tkinter-compatible image
-    tk_image = ImageTk.PhotoImage(pil_image)
-
-    # update the existing image label with the new image
-    image_label.configure(image=tk_image)
-
-    # keep a reference to the new image so Python does not delete it
-    image_label.image = tk_image
-
-    # update the existing digit label with the new correct number
-    digit_label.configure(text=f"Correct number: {image_num}")
+    return image_label, digit_label
 
 
-def next_image_button(root, training_data, image_label, digit_label, screen_height):
-    """
-    Creates and places the button that shows a new random MNIST image.
-
-    :param root: the main Tkinter window
-    :param training_data: the MNIST training data
-    :param image_label: the label currently displaying the MNIST image
-    :param digit_label: the label currently displaying the correct digit
-    :param screen_height: the height of the user's screen
-    :return: nothing
-    """
-
-    # create a button that calls update_image() when clicked
+def next_image_button(root, training_data, image_label, digit_label, screen_height):# create a button that calls update_image() when clicked
     next_button = tk.Button(
         root,
         text="Next Image",
@@ -215,14 +165,30 @@ def next_image_button(root, training_data, image_label, digit_label, screen_heig
     )
 
 
+def show_image_window(root, training_data, screen_height):
+    image_label, digit_label = display_first_image(root, training_data, screen_height)
+
+    next_image_button(root, training_data,image_label, digit_label, screen_height)
+
+
+def image_view_button(root, training_data, screen_height):
+    image_view_button = tk.Button(
+        root,
+        text="Show Images",
+        width=20,
+        height=3,
+        font=TITLE_FONT,
+        command=lambda: (image_view_button.destroy(), show_image_window(root, training_data, screen_height))
+    )
+
+    # place the exit button in the window
+    image_view_button.place(
+        x=300,
+        y=400
+    )
+
+
 def show_ui(training_data):
-    """
-    Creates the full MNIST viewer window and starts the Tkinter event loop.
-
-    :param training_data: the MNIST training data
-    :return: nothing
-    """
-
     # create the main window
     root = tk.Tk()
     root.attributes('-fullscreen', True)
@@ -240,17 +206,10 @@ def show_ui(training_data):
     # show the title
     create_title(root)
 
-    # get the first random image and correct number
-    pil_image, image_num = prepare_random_mnist_image(training_data)
+    # create image view option button
+    image_view_button(root, training_data, screen_height)
 
-    # create the image label
-    image_label = return_image(root, pil_image, screen_height)
 
-    # create the correct-number label
-    digit_label = return_label(root, image_num, screen_height)
-
-    # create button that gets another random image
-    next_image_button(root, training_data, image_label, digit_label, screen_height)
 
     # run the window
     root.mainloop()

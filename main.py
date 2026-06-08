@@ -1,5 +1,5 @@
 import mnist_loader
-# import ui as ui
+import ui as ui
 from network import network
 
 training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
@@ -22,7 +22,12 @@ COST_FUNCTION = "cross_entropy"
 # options: sigmoid, softmax
 OUTPUT_ACTIVATION = "softmax"
 
-net = network([INPUT_NEURON, HIDDEN_NEURON, OUTPUT_NEURON], weight_initialization=WEIGHT_INITIALIZATION, output_activation=OUTPUT_ACTIVATION)
+
+# enable to show ui
+ui.show_ui(training_data)
+
+
+"""net = network([INPUT_NEURON, HIDDEN_NEURON, OUTPUT_NEURON], weight_initialization=WEIGHT_INITIALIZATION, output_activation=OUTPUT_ACTIVATION)
 
 net.SGD(
     training_data=training_data,
@@ -34,6 +39,4 @@ net.SGD(
     image_shift=IMAGE_SHIFT,
     test_data=test_data,
 )
-
-# enable to show ui
-#ui.show_ui(training_data)
+"""
