@@ -425,7 +425,38 @@ def create_cost_function_dropdown(root):
     return cost_function_var
 
 
-def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry, lmbda_entry, image_shift_entry, cost_function_entry):
+def create_output_activation_dropdown(root):
+    output_activation_label = tk.Label(
+        root,
+        text="Output activation:",
+        font=("Arial", 18),
+        bg=BG_COLOR
+    )
+
+    output_activation_label.place(
+        relx=0.3,
+        y=650
+    )
+
+    output_activation_var = tk.StringVar(root)
+    output_activation_var.set("softmax")
+
+    output_activation_dropdown = tk.OptionMenu(
+        root,
+        output_activation_var,
+        "sigmoid",
+        "softmax"
+    )
+
+    output_activation_dropdown.place(
+        relx=0.3,
+        y=700
+    )
+
+    return output_activation_var
+
+
+def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry, lmbda_entry, image_shift_entry, cost_function_entry, output_activation):
     train_model_button = tk.Button(
         root,
         text="Train Model",
@@ -441,7 +472,8 @@ def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_en
                 float(eta_entry.get()),
                 float(lmbda_entry.get()),
                 int(image_shift_entry.get()),
-                cost_function_entry.get()
+                cost_function_entry.get(),
+                output_activation.get()
             ),
             daemon=True
         ).start()
@@ -471,6 +503,8 @@ def open_training_page(root, menu_buttons, train_model):
 
     cost_function = create_cost_function_dropdown(root)
 
+    output_activation = create_output_activation_dropdown(root)
+
     clear_menu(menu_buttons)
 
     train_model_button(
@@ -482,7 +516,8 @@ def open_training_page(root, menu_buttons, train_model):
         eta_entry,
         lmbda_entry,
         image_shift_entry,
-        cost_function
+        cost_function,
+        output_activation
     )
 
 
