@@ -6,8 +6,10 @@ import threading
 
 BG_COLOR = "#454545"
 TITLE_FONT = ("Arial", 32, "bold")
-IMAGE_SIZE = 900
 current_page_widgets = []
+GRID_SIZE = 28
+PIXEL_SIZE = 25
+IMAGE_SIZE = GRID_SIZE * PIXEL_SIZE
 
 
 def clear_current_page():
@@ -778,34 +780,50 @@ def create_drawing_canvas(root, screen_height):
 
 
 def setup_drawing(canvas):
-    last_x = None
-    last_y = None
+    pixels = np.zeros((GRID_SIZE, GRID_SIZE))
 
-    def start_draw(event):
-        nonlocal last_x, last_y
+    def draw_pixel(event):
+        column = event.x // PIXEL_SIZE
+        row = event.y // PIXEL_SIZE
 
-        last_x = event.x
-        last_y = event.y
+        if 0 <= row < GRID_SIZE and 0 <= column < GRID_SIZE:
+            pixels[row][column] = 1
 
-    def draw(event):
-        nonlocal last_x, last_y
+            x1 = column * PIXEL_SIZE
+            y1 = row * PIXEL_SIZE
+            x2 = x1 + PIXEL_SIZE
+            y2 = y1 + PIXEL_SIZE
 
-        canvas.create_line(
-            last_x,
-            last_y,
-            event.x,
-            event.y,
-            fill="white",
-            width=35,
-            capstyle=tk.ROUND,
-            smooth=True
-        )
+            canvas.create_rectangle(
+                x1,
+                y1,
+                x2,
+                y2,
+                fill="white",
+                outline="white"
+            )
 
-        last_x = event.x
-        last_y = event.y
+    canvas.bind("<Button-1>", draw_pixel)
+    canvas.bind("<B1-Motion>", draw_pixel)
 
-    canvas.bind("<Button-1>", start_draw)
-    canvas.bind("<B1-Motion>", draw)
+    return pixels
+
+
+def create_clear_canvas_button(root, drawing_canvas, screen_height):
+    clear_button = tk.Button(
+        root,
+        text="Clear",
+        width=12,
+        height=2,
+        command=lambda: drawing_canvas.delete("all")
+    )
+
+    clear_button.place(
+        x=100,
+        y=((screen_height - IMAGE_SIZE) / 2) + IMAGE_SIZE
+    )
+
+    current_page_widgets.append(clear_button)
 
 
 def open_test_page(root, training_data, train_model, screen_height):
@@ -814,6 +832,10 @@ def open_test_page(root, training_data, train_model, screen_height):
     create_test_title(root)
 
     drawing_canvas = create_drawing_canvas(root, screen_height)
+
+    setup_drawing(drawing_canvas)
+
+    create_clear_canvas_button(root, drawing_canvas, screen_height)
 
     setup_drawing(drawing_canvas)
 
