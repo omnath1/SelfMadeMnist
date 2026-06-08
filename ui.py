@@ -1,9 +1,11 @@
+# imports
 import tkinter as tk
 import numpy as np
 from PIL import Image, ImageTk
 import random
 import threading
 
+# Constants / global variables
 BG_COLOR = "#454545"
 TITLE_FONT = ("Arial", 32, "bold")
 current_page_widgets = []
@@ -11,37 +13,12 @@ GRID_SIZE = 28
 PIXEL_SIZE = 25
 IMAGE_SIZE = GRID_SIZE * PIXEL_SIZE
 
-
+# General helper functions
 def clear_current_page():
     for widget in current_page_widgets:
         widget.destroy()
 
     current_page_widgets.clear()
-
-
-def create_console(root):
-    screen_width, screen_height = screen_size(root)
-
-    console = tk.Text(
-        root,
-        font=("Arial", 18)
-    )
-
-    console.place(
-        x=screen_width/2,
-        y=200,
-        width=(screen_width/2) - screen_width/10,
-        height=screen_height *0.77
-    )
-
-    current_page_widgets.append(console)
-
-    return console
-
-
-def write_to_console(console, message):
-    console.insert(tk.END, message + "\n")
-    console.see(tk.END)
 
 
 def screen_size(root):
@@ -53,6 +30,12 @@ def screen_size(root):
     return screen_width, screen_height
 
 
+def write_to_console(console, message):
+    console.insert(tk.END, message + "\n")
+    console.see(tk.END)
+
+
+# General reusable UI functions
 def create_exit_button(root):
     """
     Creates and places the exit button.
@@ -74,6 +57,24 @@ def create_exit_button(root):
     )
 
 
+def create_back_button(root, training_data, train_model):
+    back_button = tk.Button(
+        root,
+        text="Back",
+        width=12,
+        height=2,
+        command=lambda: show_main_menu(root, training_data, train_model)
+    )
+
+    back_button.place(
+        x=0,
+        y=0
+    )
+
+    current_page_widgets.append(back_button)
+
+
+# Title functions
 def create_menu_title(root):# create the title label
     title = tk.Label(
         root,
@@ -130,6 +131,113 @@ def create_test_title(root):# create the title label
     current_page_widgets.append(title)
 
 
+# Main menu functions
+def image_view_button(root, training_data, screen_height, current_page_widgets, train_model):
+    image_view_button = tk.Button(
+        root,
+        text="Show Images",
+        width=20,
+        height=3,
+        font=TITLE_FONT,
+        command=lambda: (
+            clear_current_page(),
+            show_image_window(root, training_data, screen_height, current_page_widgets, train_model)
+        )
+    )
+
+    current_page_widgets.append(image_view_button)
+
+    # place the exit button in the window
+    image_view_button.place(
+        x=300,
+        y=400
+    )
+
+
+def training_page_button(root, training_data, screen_width, current_page_widgets, train_model):
+    training_page_button = tk.Button(
+        root,
+        text="Train Model",
+        width=20,
+        height=3,
+        font=TITLE_FONT,
+        command=lambda: open_training_page(
+            root,
+            training_data,
+            current_page_widgets,
+            train_model
+        )
+    )
+
+    current_page_widgets.append(training_page_button)
+
+    # place the exit button in the window
+    training_page_button.place(
+        relx=1.0,
+        x=-300,
+        y=400,
+        anchor="ne"
+    )
+
+
+def test_page_button(root, training_data, train_model, screen_height):
+    test_page_button = tk.Button(
+        root,
+        text="Test Model",
+        width=20,
+        height=3,
+        font=TITLE_FONT,
+        command=lambda: open_test_page(
+            root,
+            training_data,
+            train_model,
+            screen_height
+        )
+    )
+
+    current_page_widgets.append(test_page_button)
+
+    # place the exit button in the window
+    test_page_button.place(
+        x=300,
+        y=800
+    )
+
+
+def show_main_menu(root, training_data, train_model):
+    screen_width, screen_height = screen_size(root)
+
+    clear_current_page()
+
+    image_view_button(
+        root,
+        training_data,
+        screen_height,
+        current_page_widgets,
+        train_model
+    )
+
+    training_page_button(
+        root,
+        training_data,
+        screen_width,
+        current_page_widgets,
+        train_model
+    )
+
+    test_page_button(
+        root,
+        training_data,
+        train_model,
+        screen_height
+    )
+
+    create_menu_title(
+        root
+    )
+
+
+# Image viewer page
 def prepare_random_mnist_image(training_data):
     """
     Picks a random MNIST image from the training data and prepares it for Tkinter.
@@ -253,26 +361,25 @@ def show_image_window(root, training_data, screen_height, current_page_widgets, 
     create_image_title(root)
 
 
-def image_view_button(root, training_data, screen_height, current_page_widgets, train_model):
-    image_view_button = tk.Button(
+# Training page helper widgets
+def create_console(root):
+    screen_width, screen_height = screen_size(root)
+
+    console = tk.Text(
         root,
-        text="Show Images",
-        width=20,
-        height=3,
-        font=TITLE_FONT,
-        command=lambda: (
-            clear_current_page(),
-            show_image_window(root, training_data, screen_height, current_page_widgets, train_model)
-        )
+        font=("Arial", 18)
     )
 
-    current_page_widgets.append(image_view_button)
-
-    # place the exit button in the window
-    image_view_button.place(
-        x=300,
-        y=400
+    console.place(
+        x=screen_width/2,
+        y=200,
+        width=(screen_width/2) - screen_width/10,
+        height=screen_height *0.77
     )
+
+    current_page_widgets.append(console)
+
+    return console
 
 
 def create_hidden_neuron_entry(root):
@@ -639,6 +746,7 @@ def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_en
     current_page_widgets.append(train_model_button)
 
 
+# Training page opener
 def open_training_page(root, training_data, current_page_widgets, train_model):
     clear_current_page()
 
@@ -685,82 +793,7 @@ def open_training_page(root, training_data, current_page_widgets, train_model):
     create_back_button(root, training_data, train_model)
 
 
-def training_page_button(root, training_data, screen_width, current_page_widgets, train_model):
-    training_page_button = tk.Button(
-        root,
-        text="Train Model",
-        width=20,
-        height=3,
-        font=TITLE_FONT,
-        command=lambda: open_training_page(
-            root,
-            training_data,
-            current_page_widgets,
-            train_model
-        )
-    )
-
-    current_page_widgets.append(training_page_button)
-
-    # place the exit button in the window
-    training_page_button.place(
-        relx=1.0,
-        x=-300,
-        y=400,
-        anchor="ne"
-    )
-
-
-def show_main_menu(root, training_data, train_model):
-    screen_width, screen_height = screen_size(root)
-
-    clear_current_page()
-
-    image_view_button(
-        root,
-        training_data,
-        screen_height,
-        current_page_widgets,
-        train_model
-    )
-
-    training_page_button(
-        root,
-        training_data,
-        screen_width,
-        current_page_widgets,
-        train_model
-    )
-
-    test_page_button(
-        root,
-        training_data,
-        train_model,
-        screen_height
-    )
-
-    create_menu_title(
-        root
-    )
-
-
-def create_back_button(root, training_data, train_model):
-    back_button = tk.Button(
-        root,
-        text="Back",
-        width=12,
-        height=2,
-        command=lambda: show_main_menu(root, training_data, train_model)
-    )
-
-    back_button.place(
-        x=0,
-        y=0
-    )
-
-    current_page_widgets.append(back_button)
-
-
+# Test / drawing page helper widgets
 def create_drawing_canvas(root, screen_height):
     drawing_canvas = tk.Canvas(
         root,
@@ -826,6 +859,7 @@ def create_clear_canvas_button(root, drawing_canvas, screen_height):
     current_page_widgets.append(clear_button)
 
 
+# Test page opener
 def open_test_page(root, training_data, train_model, screen_height):
     clear_current_page()
 
@@ -842,30 +876,7 @@ def open_test_page(root, training_data, train_model, screen_height):
     create_back_button(root, training_data, train_model)
 
 
-def test_page_button(root, training_data, train_model, screen_height):
-    test_page_button = tk.Button(
-        root,
-        text="Test Model",
-        width=20,
-        height=3,
-        font=TITLE_FONT,
-        command=lambda: open_test_page(
-            root,
-            training_data,
-            train_model,
-            screen_height
-        )
-    )
-
-    current_page_widgets.append(test_page_button)
-
-    # place the exit button in the window
-    test_page_button.place(
-        x=300,
-        y=800
-    )
-
-
+# 12. Main UI starter
 def show_ui(training_data, train_model):
     # create the main window
     root = tk.Tk()
