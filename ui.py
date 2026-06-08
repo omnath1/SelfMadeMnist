@@ -712,6 +712,10 @@ def create_back_button(root, training_data, train_model):
     current_page_widgets.append(back_button)
 
 
+def open_test_page(root):
+    clear_current_page()
+
+
 def test_page_button(root):
     test_page_button = tk.Button(
         root,
@@ -719,11 +723,8 @@ def test_page_button(root):
         width=20,
         height=3,
         font=TITLE_FONT,
-        command=lambda: open_training_page(
-            root,
-            training_data,
-            current_page_widgets,
-            train_model
+        command=lambda: open_test_page(
+            root
         )
     )
 
