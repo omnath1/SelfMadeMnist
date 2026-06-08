@@ -278,7 +278,65 @@ def create_epoch_entry(root):
     return epoch_entry
 
 
-def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry):
+def create_mini_batch_size_entry(root):
+    mini_batch_size_label = tk.Label(
+        root,
+        text="Mini batch size:",
+        font=("Arial", 18),
+        bg=BG_COLOR
+    )
+
+    mini_batch_size_label.place(
+        relx=0.3,
+        y=350
+    )
+
+    mini_batch_size_entry = tk.Entry(
+        root,
+        font=("Arial", 18),
+        width=10
+    )
+
+    mini_batch_size_entry.insert(0, "10")
+
+    mini_batch_size_entry.place(
+        relx=0.3,
+        y=400
+    )
+
+    return mini_batch_size_entry
+
+
+def create_eta_entry(root):
+    eta_label = tk.Label(
+        root,
+        text="Eta:",
+        font=("Arial", 18),
+        bg=BG_COLOR
+    )
+
+    eta_label.place(
+        relx=0.1,
+        y=350
+    )
+
+    eta_entry = tk.Entry(
+        root,
+        font=("Arial", 18),
+        width=10
+    )
+
+    eta_entry.insert(0, "0.5")
+
+    eta_entry.place(
+        relx=0.1,
+        y=400
+    )
+
+    return eta_entry
+
+
+def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry):
     train_model_button = tk.Button(
         root,
         text="Train Model",
@@ -289,7 +347,9 @@ def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_en
             target=lambda: train_model(
                 lambda message: write_to_console(console, message),
                 int(hidden_neuron_entry.get()),
-                int(epoch_entry.get())
+                int(epoch_entry.get()),
+                int(mini_batch_size_entry.get()),
+                float(eta_entry.get())
             ),
             daemon=True
         ).start()
@@ -309,9 +369,13 @@ def open_training_page(root, menu_buttons, train_model):
 
     epoch_entry = create_epoch_entry(root)
 
+    mini_batch_size_entry = create_mini_batch_size_entry(root)
+
+    eta_entry = create_eta_entry(root)
+
     clear_menu(menu_buttons)
 
-    train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry)
+    train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry)
 
 
 def training_page_button(root, screen_width, menu_buttons, train_model):

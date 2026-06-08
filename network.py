@@ -82,10 +82,15 @@ class network(object):
             final_correct = self.evaluate(test_data)
             final_accuracy = (final_correct / n_test) * 100
 
-            print("\nTraining complete")
-            print("Hidden layer neuron amount:", random_stat)
-            print("Final accuracy: {0:.2f}%".format(final_accuracy))
-            print("Correct predictions: {0} / {1}".format(final_correct, n_test))
+            if log_callback:
+                log_callback("\nTraining complete")
+                log_callback("Final accuracy: {0:.2f}%".format(final_accuracy))
+                log_callback("Correct predictions: {0} / {1}".format(final_correct, n_test))
+                log_callback("")
+            else:
+                print("\nTraining complete")
+                print("Final accuracy: {0:.2f}%".format(final_accuracy))
+                print("Correct predictions: {0} / {1}".format(final_correct, n_test))
 
             return final_accuracy, final_correct
 

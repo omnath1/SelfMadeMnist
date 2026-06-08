@@ -6,8 +6,6 @@ training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
 
 INPUT_NEURON = 784
 OUTPUT_NEURON = 10
-MINI_BATCH_SIZE = 10
-ETA = 0.5
 LMBDA = 5.0 # 0.0 == L2 off
 IMAGE_SHIFT = 0
 
@@ -23,7 +21,7 @@ OUTPUT_ACTIVATION = "softmax"
 current_network = None
 current_training_id = 0
 
-def train_model(log_callback, hidden_neuron, epoch):
+def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta):
     global current_network, current_training_id
 
     current_training_id += 1
@@ -39,8 +37,8 @@ def train_model(log_callback, hidden_neuron, epoch):
     current_network.SGD(
         training_data=training_data,
         epochs=epoch,
-        mini_batch_size=MINI_BATCH_SIZE,
-        eta=ETA,
+        mini_batch_size=mini_batch_size,
+        eta=eta,
         lmbda=LMBDA,
         cost_function=COST_FUNCTION,
         image_shift=IMAGE_SHIFT,
