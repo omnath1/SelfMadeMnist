@@ -733,7 +733,8 @@ def show_main_menu(root, training_data, train_model):
     test_page_button(
         root,
         training_data,
-        train_model
+        train_model,
+        screen_height
     )
 
     create_menu_title(
@@ -758,15 +759,35 @@ def create_back_button(root, training_data, train_model):
     current_page_widgets.append(back_button)
 
 
-def open_test_page(root, training_data, train_model):
+def create_drawing_canvas(root, screen_height):
+    drawing_canvas = tk.Canvas(
+        root,
+        width=IMAGE_SIZE,
+        height=IMAGE_SIZE,
+        bg="black"
+    )
+
+    drawing_canvas.place(
+        x=100,
+        y=(screen_height - IMAGE_SIZE) / 2
+    )
+
+    current_page_widgets.append(drawing_canvas)
+
+    return drawing_canvas
+
+
+def open_test_page(root, training_data, train_model, screen_height):
     clear_current_page()
 
     create_test_title(root)
 
+    create_drawing_canvas(root, screen_height)
+
     create_back_button(root, training_data, train_model)
 
 
-def test_page_button(root, training_data, train_model):
+def test_page_button(root, training_data, train_model, screen_height):
     test_page_button = tk.Button(
         root,
         text="Test Model",
@@ -776,7 +797,8 @@ def test_page_button(root, training_data, train_model):
         command=lambda: open_test_page(
             root,
             training_data,
-            train_model
+            train_model,
+            screen_height
         )
     )
 
@@ -828,7 +850,8 @@ def show_ui(training_data, train_model):
     test_page_button(
         root,
         training_data,
-        train_model
+        train_model,
+        screen_height
     )
 
     # run the window
