@@ -7,16 +7,10 @@ training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
 INPUT_NEURON = 784
 OUTPUT_NEURON = 10
 
-# options: random, improved
-WEIGHT_INITIALIZATION = "improved"
-
-# options: sigmoid, softmax
-OUTPUT_ACTIVATION = "sigmoid"
-
 current_network = None
 current_training_id = 0
 
-def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta, lmbda, image_shift, cost_function, output_activation):
+def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta, lmbda, image_shift, cost_function, output_activation, weight_init):
     global current_network, current_training_id
 
     current_training_id += 1
@@ -25,7 +19,7 @@ def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta, lmbda,
     current_network = network(
         [INPUT_NEURON, hidden_neuron,
         OUTPUT_NEURON],
-        weight_initialization=WEIGHT_INITIALIZATION,
+        weight_initialization=weight_init,
         output_activation=output_activation
     )
 

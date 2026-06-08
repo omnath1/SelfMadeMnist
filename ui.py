@@ -456,7 +456,38 @@ def create_output_activation_dropdown(root):
     return output_activation_var
 
 
-def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry, lmbda_entry, image_shift_entry, cost_function_entry, output_activation):
+def create_weight_init_dropdown(root):
+    weight_init_label = tk.Label(
+        root,
+        text="Weight Initialization:",
+        font=("Arial", 18),
+        bg=BG_COLOR
+    )
+
+    weight_init_label.place(
+        relx=0.1,
+        y=800
+    )
+
+    weight_init_var = tk.StringVar(root)
+    weight_init_var.set("improved")
+
+    output_activation_dropdown = tk.OptionMenu(
+        root,
+        weight_init_var,
+        "improved",
+        "random"
+    )
+
+    output_activation_dropdown.place(
+        relx=0.1,
+        y=850
+    )
+
+    return weight_init_var
+
+
+def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry, lmbda_entry, image_shift_entry, cost_function_entry, output_activation, weight_init):
     train_model_button = tk.Button(
         root,
         text="Train Model",
@@ -473,7 +504,8 @@ def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_en
                 float(lmbda_entry.get()),
                 int(image_shift_entry.get()),
                 cost_function_entry.get(),
-                output_activation.get()
+                output_activation.get(),
+                weight_init.get()
             ),
             daemon=True
         ).start()
@@ -505,6 +537,8 @@ def open_training_page(root, menu_buttons, train_model):
 
     output_activation = create_output_activation_dropdown(root)
 
+    weight_init = create_weight_init_dropdown(root)
+
     clear_menu(menu_buttons)
 
     train_model_button(
@@ -517,7 +551,8 @@ def open_training_page(root, menu_buttons, train_model):
         lmbda_entry,
         image_shift_entry,
         cost_function,
-        output_activation
+        output_activation,
+        weight_init
     )
 
 
