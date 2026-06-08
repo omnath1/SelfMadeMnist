@@ -10,6 +10,29 @@ IMAGE_SIZE = 900
 menu_buttons = []
 
 
+def create_console(root):
+    screen_width, screen_height = screen_size(root)
+
+    console = tk.Text(
+        root,
+        font=("Arial", 18)
+    )
+
+    console.place(
+        x=screen_width/2,
+        y=200,
+        width=(screen_width/2) - screen_width/10,
+        height=screen_height *0.77
+    )
+
+    return console
+
+
+def write_to_console(console, message):
+    console.insert(tk.END, message + "\n")
+    console.see(tk.END)
+
+
 def clear_menu(menu_buttons):
     for button in menu_buttons:
         button.destroy()
@@ -197,7 +220,7 @@ def image_view_button(root, training_data, screen_height, menu_buttons):
     )
 
 
-def train_model_button(root, train_model):
+def train_model_button(root, train_model, console):
     train_model_button = tk.Button(
         root,
         text="Train Model",
@@ -205,7 +228,7 @@ def train_model_button(root, train_model):
         height=2,
         font=TITLE_FONT,
         command=lambda: threading.Thread(
-            target=train_model,
+            target=lambda: train_model(lambda message: write_to_console(console, message)),
             daemon=True
         ).start()
     )
@@ -217,6 +240,14 @@ def train_model_button(root, train_model):
     )
 
 
+def open_training_page(root, menu_buttons, train_model):
+    console = create_console(root)
+
+    clear_menu(menu_buttons)
+
+    train_model_button(root, train_model, console)
+
+
 def training_page_button(root, screen_width, menu_buttons, train_model):
     training_page_button = tk.Button(
         root,
@@ -224,9 +255,10 @@ def training_page_button(root, screen_width, menu_buttons, train_model):
         width=20,
         height=3,
         font=TITLE_FONT,
-        command=lambda: (
-            clear_menu(menu_buttons),
-            train_model_button(root, train_model)
+        command=lambda: open_training_page(
+            root,
+            menu_buttons,
+            train_model
         )
     )
 

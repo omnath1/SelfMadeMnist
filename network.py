@@ -34,7 +34,7 @@ class network(object):
 
         return a
 
-    def SGD(self, training_data, epochs, mini_batch_size, eta, lmbda=0.0, cost_function="quadratic", image_shift=0, test_data=None, random_stat=None, training_id=None, should_stop=None):
+    def SGD(self, training_data, epochs, mini_batch_size, eta, lmbda=0.0, cost_function="quadratic", image_shift=0, test_data=None, random_stat=None, training_id=None, should_stop=None, log_callback=None):
         if test_data:
             n_test = len(test_data)
 
@@ -42,16 +42,24 @@ class network(object):
 
         for j in range(epochs):
             if should_stop is not None and should_stop(training_id):
-                print("Training stopped because a newer training run started.")
-                return
+                if log_callback:
+                    log_callback("Training stopped because a newer training run started.")
+                    return
+                else:
+                    print("Training stopped because a newer training run started.")
+                    return
 
             random.shuffle(training_data)
             mini_batches = [training_data[k:k + mini_batch_size] for k in range(0, n, mini_batch_size)]
 
             for mini_batch in mini_batches:
                 if should_stop is not None and should_stop(training_id):
-                    print("Training stopped because a newer training run started.")
-                    return
+                    if log_callback:
+                        log_callback("Training stopped because a newer training run started.")
+                        return
+                    else:
+                        print("Training stopped because a newer training run started.")
+                        return
 
                 self.update_mini_batch(mini_batch, eta, cost_function, image_shift, lmbda, n)
 
@@ -59,9 +67,16 @@ class network(object):
                 correct = self.evaluate(test_data)
                 accuracy = (correct / n_test) * 100
 
-                print("Epoch {0}: {1} / {2} ({3:.2f}%)".format(j, correct, n_test, accuracy))
+                if log_callback:
+                    log_callback("Epoch {0}: {1} / {2} ({3:.2f}%)".format(j, correct, n_test, accuracy))
+                else:
+                    print("Epoch {0}: {1} / {2} ({3:.2f}%)".format(j, correct, n_test, accuracy))
             else:
-                print("epoch {0} complete".format(j))
+                if log_callback:
+                    log_callback("epoch {0} complete".format(j))
+                else:
+                    print("epoch {0} complete".format(j))
+
 
         if test_data:
             final_correct = self.evaluate(test_data)
