@@ -220,7 +220,65 @@ def image_view_button(root, training_data, screen_height, menu_buttons):
     )
 
 
-def train_model_button(root, train_model, console):
+def create_hidden_neuron_entry(root):
+    hidden_neuron_label = tk.Label(
+        root,
+        text="Hidden neurons:",
+        font=("Arial", 18),
+        bg=BG_COLOR
+    )
+
+    hidden_neuron_label.place(
+        relx=0.1,
+        y=200
+    )
+
+    hidden_neuron_entry = tk.Entry(
+        root,
+        font=("Arial", 18),
+        width=10
+    )
+
+    hidden_neuron_entry.insert(0, "128")
+
+    hidden_neuron_entry.place(
+        relx=0.1,
+        y=250
+    )
+
+    return hidden_neuron_entry
+
+
+def create_epoch_entry(root):
+    epoch_label = tk.Label(
+        root,
+        text="Epochs:",
+        font=("Arial", 18),
+        bg=BG_COLOR
+    )
+
+    epoch_label.place(
+        relx=0.3,
+        y=200
+    )
+
+    epoch_entry = tk.Entry(
+        root,
+        font=("Arial", 18),
+        width=10
+    )
+
+    epoch_entry.insert(0, "30")
+
+    epoch_entry.place(
+        relx=0.3,
+        y=250
+    )
+
+    return epoch_entry
+
+
+def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry):
     train_model_button = tk.Button(
         root,
         text="Train Model",
@@ -228,7 +286,11 @@ def train_model_button(root, train_model, console):
         height=2,
         font=TITLE_FONT,
         command=lambda: threading.Thread(
-            target=lambda: train_model(lambda message: write_to_console(console, message)),
+            target=lambda: train_model(
+                lambda message: write_to_console(console, message),
+                int(hidden_neuron_entry.get()),
+                int(epoch_entry.get())
+            ),
             daemon=True
         ).start()
     )
@@ -243,9 +305,13 @@ def train_model_button(root, train_model, console):
 def open_training_page(root, menu_buttons, train_model):
     console = create_console(root)
 
+    hidden_neuron_entry = create_hidden_neuron_entry(root)
+
+    epoch_entry = create_epoch_entry(root)
+
     clear_menu(menu_buttons)
 
-    train_model_button(root, train_model, console)
+    train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry)
 
 
 def training_page_button(root, screen_width, menu_buttons, train_model):

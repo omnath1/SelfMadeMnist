@@ -5,9 +5,7 @@ from network import network
 training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
 
 INPUT_NEURON = 784
-HIDDEN_NEURON = 128
 OUTPUT_NEURON = 10
-EPOCHS = 30
 MINI_BATCH_SIZE = 10
 ETA = 0.5
 LMBDA = 5.0 # 0.0 == L2 off
@@ -25,14 +23,14 @@ OUTPUT_ACTIVATION = "softmax"
 current_network = None
 current_training_id = 0
 
-def train_model(log_callback):
+def train_model(log_callback, hidden_neuron, epoch):
     global current_network, current_training_id
 
     current_training_id += 1
     my_training_id = current_training_id
 
     current_network = network(
-        [INPUT_NEURON, HIDDEN_NEURON,
+        [INPUT_NEURON, hidden_neuron,
         OUTPUT_NEURON],
         weight_initialization=WEIGHT_INITIALIZATION,
         output_activation=OUTPUT_ACTIVATION
@@ -40,7 +38,7 @@ def train_model(log_callback):
 
     current_network.SGD(
         training_data=training_data,
-        epochs=EPOCHS,
+        epochs=epoch,
         mini_batch_size=MINI_BATCH_SIZE,
         eta=ETA,
         lmbda=LMBDA,
