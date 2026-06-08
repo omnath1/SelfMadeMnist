@@ -2,27 +2,36 @@ import random
 import numpy as np
 
 class network(object):
-    def __init__(self, sizes, weight_initialization="random"):
+    def __init__(self, sizes, weight_initialization="random", output_activation="sigmoid"):
         self.num_layers = len(sizes)
         self.sizes = sizes
+        self.output_activation = output_activation
         self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
 
-        # use the random init
         if weight_initialization == "random":
             self.weights = [np.random.randn(y, x) for x, y in zip(sizes[:-1], sizes[1:])]
 
-        # use the improved init
         elif weight_initialization == "improved":
             self.weights = [np.random.randn(y, x) / np.sqrt(x) for x, y in zip(sizes[:-1], sizes[1:])]
 
-        # invalid weight init so raise error
         else:
             raise ValueError("weight_initialization must be 'random' or 'improved'")
 
+        if output_activation != "sigmoid" and output_activation != "softmax":
+            raise ValueError("output_activation must be 'sigmoid' or 'softmax'")
+
     def feedforward(self, a):
-        """ Return the output of the network if "a" is input"""
-        for b, w in zip(self.biases, self.weights):
-            a = sigmoid(np.dot(w, a) + b)
+        for i, (b, w) in enumerate(zip(self.biases, self.weights)):
+            z = np.dot(w, a) + b
+
+            if i == len(self.weights) - 1:
+                if self.output_activation == "softmax":
+                    a = softmax(z)
+                elif self.output_activation == "sigmoid":
+                    a = sigmoid(z)
+            else:
+                a = sigmoid(z)
+
         return a
 
     def SGD(self, training_data, epochs, mini_batch_size, eta, lmbda=0.0, cost_function="quadratic", image_shift=0, test_data=None, random_stat=None):
@@ -51,16 +60,13 @@ class network(object):
             final_accuracy = (final_correct / n_test) * 100
 
             print("\nTraining complete")
-            print("Hidden layer neuron amount:", random_stat) #used to test running the model with different values
+            print("Hidden layer neuron amount:", random_stat)
             print("Final accuracy: {0:.2f}%".format(final_accuracy))
             print("Correct predictions: {0} / {1}".format(final_correct, n_test))
 
             return final_accuracy, final_correct
 
     def update_mini_batch(self, mini_batch, eta, cost_function, image_shift, lmbda, n):
-        """Update the network’s weights and biases by applying gradient descent
-        using backpropagation to a single mini batch. The "mini_batch" is a list
-        of tuples "(x, y)", and "eta" is the learning rate"""
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
 
@@ -83,13 +89,24 @@ class network(object):
         activations = [x]
         zs = []
 
-        for b, w in zip(self.biases, self.weights):
+        for i, (b, w) in enumerate(zip(self.biases, self.weights)):
             z = np.dot(w, activation) + b
             zs.append(z)
-            activation = sigmoid(z)
+
+            if i == len(self.weights) - 1:
+                if self.output_activation == "softmax":
+                    activation = softmax(z)
+                elif self.output_activation == "sigmoid":
+                    activation = sigmoid(z)
+            else:
+                activation = sigmoid(z)
+
             activations.append(activation)
 
         if cost_function == "quadratic":
+            if self.output_activation == "softmax":
+                raise ValueError("quadratic cost should only be used with sigmoid output activation")
+
             delta = self.cost_derivative(activations[-1], y) * sigmoid_prime(zs[-1])
 
         elif cost_function == "cross_entropy":
@@ -107,7 +124,8 @@ class network(object):
             delta = np.dot(self.weights[-l+1].transpose(), delta) * sp
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
-        return (nabla_b, nabla_w)
+
+        return nabla_b, nabla_w
 
     def evaluate(self, test_data):
         test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
@@ -115,7 +133,8 @@ class network(object):
         return sum(int(x == y) for (x, y) in test_results)
 
     def cost_derivative(self, output_activation, y):
-        return (output_activation - y)
+        return output_activation - y
+
 
 def random_shift_image(x, max_shift=1):
     image = x.reshape(28, 28)
@@ -144,8 +163,15 @@ def random_shift_image(x, max_shift=1):
 
     return shifted.reshape(784, 1)
 
+
+def softmax(x):
+    exp_x = np.exp(x - np.max(x))
+    return exp_x / np.sum(exp_x, axis=0)
+
+
 def sigmoid(z):
-    return 1.0/(1.0 + np.exp(-z))
+    return 1.0 / (1.0 + np.exp(-z))
+
 
 def sigmoid_prime(z):
     return sigmoid(z) * (1 - sigmoid(z))

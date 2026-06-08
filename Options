@@ -1,6 +1,6 @@
 WEIGHT_INITIALIZATION
 
-standard:
+random:
     sets the weights randomly using a standard normal distribution
     can cause activations to become too large in deeper networks
 
@@ -36,6 +36,22 @@ LMBDA
     discourages very large weights
     helps reduce overfitting
     larger values apply stronger regularization
+
+
+OUTPUT_ACTIVATION
+
+sigmoid:
+    original Chapter 1 output activation
+    each output neuron is activated independently
+    outputs values between 0 and 1
+    works with quadratic cost and cross entropy cost
+    does not guarantee that all outputs sum to 1
+
+softmax:
+    converts output activations into probabilities
+    all output values sum to 1
+    increases the probability of the most likely classes
+    ! does not support quadratic cost in this implementation
 
 
 DATASET_ARTIFICIAL_INCREASE

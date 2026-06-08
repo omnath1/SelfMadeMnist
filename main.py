@@ -5,12 +5,12 @@ from network import network
 training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
 
 INPUT_NEURON = 784
-HIDDEN_NEURON = 30
+HIDDEN_NEURON = 128
 OUTPUT_NEURON = 10
 EPOCHS = 30
 MINI_BATCH_SIZE = 10
 ETA = 0.5
-LMBDA = 5.0
+LMBDA = 5.0 # 0.0 == L2 off
 IMAGE_SHIFT = 1
 
 # options: random, improved
@@ -19,7 +19,10 @@ WEIGHT_INITIALIZATION = "improved"
 # options: quadratic, cross_entropy
 COST_FUNCTION = "cross_entropy"
 
-net = network([INPUT_NEURON, HIDDEN_NEURON, OUTPUT_NEURON], weight_initialization=WEIGHT_INITIALIZATION)
+# options: sigmoid, softmax
+OUTPUT_ACTIVATION = "softmax"
+
+net = network([INPUT_NEURON, HIDDEN_NEURON, OUTPUT_NEURON], weight_initialization=WEIGHT_INITIALIZATION, output_activation=OUTPUT_ACTIVATION)
 
 net.SGD(
     training_data=training_data,
