@@ -72,24 +72,60 @@ def create_exit_button(root):
     )
 
 
-def create_title(root):
-    """
-    Creates and places the title text at the top of the window.
-
-    :param root: the main Tkinter window
-    :return: nothing
-    """
-
-    # create the title label
+def create_menu_title(root):# create the title label
     title = tk.Label(
         root,
-        text="Mnist Training",
+        text="Mnist Training Manager",
         font=TITLE_FONT,
         bg=BG_COLOR
     )
 
     # place the title in the window
     title.pack()
+
+    current_page_widgets.append(title)
+
+
+def create_image_title(root):# create the title label
+    title = tk.Label(
+        root,
+        text="Mnist Image Viewer",
+        font=TITLE_FONT,
+        bg=BG_COLOR
+    )
+
+    # place the title in the window
+    title.pack()
+
+    current_page_widgets.append(title)
+
+
+def create_train_title(root):# create the title label
+    title = tk.Label(
+        root,
+        text="Mnist Model Training",
+        font=TITLE_FONT,
+        bg=BG_COLOR
+    )
+
+    # place the title in the window
+    title.pack()
+
+    current_page_widgets.append(title)
+
+
+def create_test_title(root):# create the title label
+    title = tk.Label(
+        root,
+        text="Mnist Model Tester",
+        font=TITLE_FONT,
+        bg=BG_COLOR
+    )
+
+    # place the title in the window
+    title.pack()
+
+    current_page_widgets.append(title)
 
 
 def prepare_random_mnist_image(training_data):
@@ -211,6 +247,8 @@ def show_image_window(root, training_data, screen_height, current_page_widgets, 
     next_image_button(root, training_data,image_label, digit_label, screen_height, current_page_widgets)
 
     create_back_button(root, training_data, train_model)
+
+    create_image_title(root)
 
 
 def image_view_button(root, training_data, screen_height, current_page_widgets, train_model):
@@ -624,6 +662,8 @@ def open_training_page(root, training_data, current_page_widgets, train_model):
 
     save_model_var, model_name_entry = create_save_model_toggle(root)
 
+    create_train_title(root)
+
     train_model_button(
         root, train_model,
         console,
@@ -696,6 +736,10 @@ def show_main_menu(root, training_data, train_model):
         train_model
     )
 
+    create_menu_title(
+        root
+    )
+
 
 def create_back_button(root, training_data, train_model):
     back_button = tk.Button(
@@ -716,6 +760,8 @@ def create_back_button(root, training_data, train_model):
 
 def open_test_page(root, training_data, train_model):
     clear_current_page()
+
+    create_test_title(root)
 
     create_back_button(root, training_data, train_model)
 
@@ -759,7 +805,7 @@ def show_ui(training_data, train_model):
     create_exit_button(root)
 
     # show the title
-    create_title(root)
+    create_menu_title(root)
 
     # create image view option button
     image_view_button(
