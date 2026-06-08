@@ -1,5 +1,7 @@
 import random
 import numpy as np
+import json
+import os
 
 class network(object):
     def __init__(self, sizes, weight_initialization="random", output_activation="sigmoid"):
@@ -20,6 +22,7 @@ class network(object):
         if output_activation != "sigmoid" and output_activation != "softmax":
             raise ValueError("output_activation must be 'sigmoid' or 'softmax'")
 
+
     def feedforward(self, a):
         for i, (b, w) in enumerate(zip(self.biases, self.weights)):
             z = np.dot(w, a) + b
@@ -34,6 +37,7 @@ class network(object):
 
         return a
 
+
     def SGD(self, training_data, epochs, mini_batch_size, eta, lmbda=0.0, cost_function="quadratic", image_shift=0, test_data=None, random_stat=None, training_id=None, should_stop=None, log_callback=None):
         if test_data:
             n_test = len(test_data)
@@ -44,10 +48,9 @@ class network(object):
             if should_stop is not None and should_stop(training_id):
                 if log_callback:
                     log_callback("Training stopped because a newer training run started.")
-                    return
                 else:
                     print("Training stopped because a newer training run started.")
-                    return
+                return False
 
             random.shuffle(training_data)
             mini_batches = [training_data[k:k + mini_batch_size] for k in range(0, n, mini_batch_size)]
@@ -56,10 +59,9 @@ class network(object):
                 if should_stop is not None and should_stop(training_id):
                     if log_callback:
                         log_callback("Training stopped because a newer training run started.")
-                        return
                     else:
                         print("Training stopped because a newer training run started.")
-                        return
+                    return False
 
                 self.update_mini_batch(mini_batch, eta, cost_function, image_shift, lmbda, n)
 
@@ -92,7 +94,26 @@ class network(object):
                 print("Final accuracy: {0:.2f}%".format(final_accuracy))
                 print("Correct predictions: {0} / {1}".format(final_correct, n_test))
 
-            return final_accuracy, final_correct
+            return True
+
+
+    def save(self, model_name):
+        os.makedirs("saved_models", exist_ok=True)
+
+        data = {
+            "sizes": self.sizes,
+            "weights": [w.tolist() for w in self.weights],
+            "biases": [b.tolist() for b in self.biases],
+            "output_activation": self.output_activation
+        }
+
+        filename = f"saved_models/{model_name}.json"
+
+        with open(filename, "w") as f:
+            json.dump(data, f)
+
+        return filename
+
 
     def update_mini_batch(self, mini_batch, eta, cost_function, image_shift, lmbda, n):
         nabla_b = [np.zeros(b.shape) for b in self.biases]
@@ -108,6 +129,7 @@ class network(object):
         self.weights = [(1 - eta * (lmbda / n)) * w - (eta / len(mini_batch)) * nw for w, nw in zip(self.weights, nabla_w)]
 
         self.biases = [b - (eta / len(mini_batch)) * nb for b, nb in zip(self.biases, nabla_b)]
+
 
     def backprop(self, x, y, cost_function="quadratic"):
         nabla_b = [np.zeros(b.shape) for b in self.biases]
@@ -155,10 +177,12 @@ class network(object):
 
         return nabla_b, nabla_w
 
+
     def evaluate(self, test_data):
         test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
 
         return sum(int(x == y) for (x, y) in test_results)
+
 
     def cost_derivative(self, output_activation, y):
         return output_activation - y

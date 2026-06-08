@@ -487,7 +487,39 @@ def create_weight_init_dropdown(root):
     return weight_init_var
 
 
-def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry, lmbda_entry, image_shift_entry, cost_function_entry, output_activation, weight_init):
+def create_save_model_toggle(root):
+    save_model_var = tk.BooleanVar()
+
+    save_model_toggle = tk.Checkbutton(
+        root,
+        text="Save model",
+        variable=save_model_var,
+        font=("Arial", 18),
+        bg=BG_COLOR
+    )
+
+    save_model_toggle.place(
+        relx=0.3,
+        y=800
+    )
+
+    model_name_entry = tk.Entry(
+        root,
+        font=("Arial", 18),
+        width=20
+    )
+
+    model_name_entry.insert(0, "model_name")
+
+    model_name_entry.place(
+        relx=0.3,
+        y=850
+    )
+
+    return save_model_var, model_name_entry
+
+
+def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry, lmbda_entry, image_shift_entry, cost_function_entry, output_activation, weight_init, save_model_var, model_name_entry):
     train_model_button = tk.Button(
         root,
         text="Train Model",
@@ -505,7 +537,9 @@ def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_en
                 int(image_shift_entry.get()),
                 cost_function_entry.get(),
                 output_activation.get(),
-                weight_init.get()
+                weight_init.get(),
+                save_model_var.get(),
+                model_name_entry.get()
             ),
             daemon=True
         ).start()
@@ -539,6 +573,8 @@ def open_training_page(root, menu_buttons, train_model):
 
     weight_init = create_weight_init_dropdown(root)
 
+    save_model_var, model_name_entry = create_save_model_toggle(root)
+
     clear_menu(menu_buttons)
 
     train_model_button(
@@ -552,7 +588,9 @@ def open_training_page(root, menu_buttons, train_model):
         image_shift_entry,
         cost_function,
         output_activation,
-        weight_init
+        weight_init,
+        save_model_var,
+        model_name_entry
     )
 
 

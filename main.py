@@ -10,7 +10,7 @@ OUTPUT_NEURON = 10
 current_network = None
 current_training_id = 0
 
-def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta, lmbda, image_shift, cost_function, output_activation, weight_init):
+def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta, lmbda, image_shift, cost_function, output_activation, weight_init, save_model, model_name):
     global current_network, current_training_id
 
     current_training_id += 1
@@ -23,7 +23,7 @@ def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta, lmbda,
         output_activation=output_activation
     )
 
-    current_network.SGD(
+    training_finished = current_network.SGD(
         training_data=training_data,
         epochs=epoch,
         mini_batch_size=mini_batch_size,
@@ -36,6 +36,12 @@ def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta, lmbda,
         should_stop=lambda training_id: training_id != current_training_id,
         log_callback=log_callback
     )
+
+    if save_model and training_finished:
+        filename = current_network.save(model_name)
+
+        if log_callback:
+            log_callback(f"Model saved as: {filename}")
 
 
 # enable to show ui

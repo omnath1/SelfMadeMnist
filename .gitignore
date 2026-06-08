@@ -4,3 +4,4 @@ __pycache__/
 .idea/
 download_mnist.py
 data/mnist.pkl.gz
+saved_models
