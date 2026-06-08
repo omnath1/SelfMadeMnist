@@ -691,7 +691,9 @@ def show_main_menu(root, training_data, train_model):
     )
 
     test_page_button(
-        root
+        root,
+        training_data,
+        train_model
     )
 
 
@@ -712,11 +714,13 @@ def create_back_button(root, training_data, train_model):
     current_page_widgets.append(back_button)
 
 
-def open_test_page(root):
+def open_test_page(root, training_data, train_model):
     clear_current_page()
 
+    create_back_button(root, training_data, train_model)
 
-def test_page_button(root):
+
+def test_page_button(root, training_data, train_model):
     test_page_button = tk.Button(
         root,
         text="Test Model",
@@ -724,7 +728,9 @@ def test_page_button(root):
         height=3,
         font=TITLE_FONT,
         command=lambda: open_test_page(
-            root
+            root,
+            training_data,
+            train_model
         )
     )
 
@@ -774,7 +780,9 @@ def show_ui(training_data, train_model):
     )
 
     test_page_button(
-        root
+        root,
+        training_data,
+        train_model
     )
 
     # run the window
