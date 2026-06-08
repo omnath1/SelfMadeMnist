@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image, ImageTk
 import random
 import threading
+import os
 
 # Constants / global variables
 BG_COLOR = "#454545"
@@ -813,14 +814,17 @@ def create_drawing_canvas(root, screen_height):
 
 
 def setup_drawing(canvas):
-    pixels = np.zeros((GRID_SIZE, GRID_SIZE))
+    canvas.pixels = np.zeros((GRID_SIZE, GRID_SIZE))
 
     def draw_pixel(event):
         column = event.x // PIXEL_SIZE
         row = event.y // PIXEL_SIZE
 
         if 0 <= row < GRID_SIZE and 0 <= column < GRID_SIZE:
-            pixels[row][column] = 1
+            canvas.pixels[row][column] = 1
+            canvas_pixels_to_network_input(canvas)
+            print(canvas.pixels)
+            print("-" * 50)
 
             x1 = column * PIXEL_SIZE
             y1 = row * PIXEL_SIZE
@@ -839,7 +843,7 @@ def setup_drawing(canvas):
     canvas.bind("<Button-1>", draw_pixel)
     canvas.bind("<B1-Motion>", draw_pixel)
 
-    return pixels
+    return canvas.pixels
 
 
 def create_clear_canvas_button(root, drawing_canvas, screen_height):
@@ -848,7 +852,10 @@ def create_clear_canvas_button(root, drawing_canvas, screen_height):
         text="Clear",
         width=12,
         height=2,
-        command=lambda: drawing_canvas.delete("all")
+        command=lambda: (
+            drawing_canvas.delete("all"),
+            drawing_canvas.pixels.fill(0)
+        )
     )
 
     clear_button.place(
@@ -857,6 +864,56 @@ def create_clear_canvas_button(root, drawing_canvas, screen_height):
     )
 
     current_page_widgets.append(clear_button)
+
+
+def canvas_pixels_to_network_input(canvas):
+    network_input = canvas.pixels.reshape(784, 1)
+
+    print(network_input)
+    print("Shape:", network_input.shape)
+    print("-" * 50)
+
+    return network_input
+
+
+def get_saved_model_names():
+    saved_model_folder = "saved_models"
+
+    if not os.path.exists(saved_model_folder):
+        return ["No saved models"]
+
+    model_names = []
+
+    for file_name in os.listdir(saved_model_folder):
+        if file_name.endswith(".json"):
+            model_names.append(file_name)
+
+    if len(model_names) == 0:
+        return ["No saved models"]
+
+    return model_names
+
+
+def create_saved_model_dropdown(root):
+    model_names = get_saved_model_names()
+
+    selected_model_var = tk.StringVar(root)
+    selected_model_var.set(model_names[0])
+
+    saved_model_dropdown = tk.OptionMenu(
+        root,
+        selected_model_var,
+        *model_names
+    )
+
+    saved_model_dropdown.place(
+        x=1100,
+        y=200
+    )
+
+    current_page_widgets.append(saved_model_dropdown)
+
+    return selected_model_var
 
 
 # Test page opener
@@ -871,7 +928,7 @@ def open_test_page(root, training_data, train_model, screen_height):
 
     create_clear_canvas_button(root, drawing_canvas, screen_height)
 
-    setup_drawing(drawing_canvas)
+    selected_model_var = create_saved_model_dropdown(root)
 
     create_back_button(root, training_data, train_model)
 
