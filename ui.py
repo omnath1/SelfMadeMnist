@@ -17,6 +17,7 @@ IMAGE_SIZE = GRID_SIZE * PIXEL_SIZE
 current_loaded_model = None
 prediction_labels = []
 guess_label = None
+loaded_model_label = None
 
 # General helper functions
 def clear_current_page():
@@ -857,7 +858,8 @@ def create_clear_canvas_button(root, drawing_canvas, screen_height):
         height=2,
         command=lambda: (
             drawing_canvas.delete("all"),
-            drawing_canvas.pixels.fill(0)
+            drawing_canvas.pixels.fill(0),
+            reset_prediction_table()
         )
     )
 
@@ -871,10 +873,6 @@ def create_clear_canvas_button(root, drawing_canvas, screen_height):
 
 def canvas_pixels_to_network_input(canvas):
     network_input = canvas.pixels.reshape(784, 1)
-
-    print(network_input)
-    print("Shape:", network_input.shape)
-    print("-" * 50)
 
     return network_input
 
@@ -961,6 +959,10 @@ def load_selected_model(selected_model_var):
 
     current_loaded_model = network.load(model_path)
 
+    loaded_model_label.configure(
+        text=f"Loaded model: {model_name}"
+    )
+
     print("Loaded model:", model_name)
 
     return current_loaded_model
@@ -1002,6 +1004,24 @@ def create_prediction_table(root, screen_height):
         current_page_widgets.append(prediction_label)
 
 
+def create_loaded_model_label(root, screen_height):
+    global loaded_model_label
+
+    loaded_model_label = tk.Label(
+        root,
+        text="Loaded model: None",
+        font=("Arial", 18, "bold"),
+        bg=BG_COLOR
+    )
+
+    loaded_model_label.place(
+        x=100,
+        y=((screen_height - IMAGE_SIZE) / 2) - 50
+    )
+
+    current_page_widgets.append(loaded_model_label)
+
+
 def update_prediction_table(output):
     predicted_digit = np.argmax(output)
 
@@ -1017,11 +1037,24 @@ def update_prediction_table(output):
         )
 
 
+def reset_prediction_table():
+    guess_label.configure(
+        text="Current guess: None"
+    )
+
+    for digit in range(10):
+        prediction_labels[digit].configure(
+            text=f"{digit}: 0%"
+        )
+
+
 # Test page opener
 def open_test_page(root, training_data, train_model, screen_height):
     clear_current_page()
 
     create_test_title(root)
+
+    create_loaded_model_label(root, screen_height)
 
     drawing_canvas = create_drawing_canvas(root, screen_height)
 
