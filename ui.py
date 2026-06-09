@@ -14,6 +14,7 @@ current_page_widgets = []
 GRID_SIZE = 28
 PIXEL_SIZE = 25
 IMAGE_SIZE = GRID_SIZE * PIXEL_SIZE
+current_loaded_model = None
 
 # General helper functions
 def clear_current_page():
@@ -823,9 +824,8 @@ def setup_drawing(canvas):
 
         if 0 <= row < GRID_SIZE and 0 <= column < GRID_SIZE:
             canvas.pixels[row][column] = 1
-            canvas_pixels_to_network_input(canvas)
-            print(canvas.pixels)
-            print("-" * 50)
+
+            predict_canvas(canvas)
 
             x1 = column * PIXEL_SIZE
             y1 = row * PIXEL_SIZE
@@ -875,6 +875,21 @@ def canvas_pixels_to_network_input(canvas):
     print("-" * 50)
 
     return network_input
+
+
+def predict_canvas(canvas):
+    if current_loaded_model is None:
+        print("No model loaded")
+        return
+
+    network_input = canvas_pixels_to_network_input(canvas)
+
+    output = current_loaded_model.feedforward(network_input)
+
+    print("Prediction output:")
+    print(output)
+    print("Predicted digit:", np.argmax(output))
+    print("-" * 50)
 
 
 def get_saved_model_names():
@@ -935,6 +950,8 @@ def create_load_model_button(root, selected_model_var):
 
 
 def load_selected_model(selected_model_var):
+    global current_loaded_model
+
     model_name = selected_model_var.get()
 
     if model_name == "No saved models":
@@ -943,11 +960,11 @@ def load_selected_model(selected_model_var):
 
     model_path = os.path.join("saved_models", model_name)
 
-    loaded_model = network.load(model_path)
+    current_loaded_model = network.load(model_path)
 
     print("Loaded model:", model_name)
 
-    return loaded_model
+    return current_loaded_model
 
 
 # Test page opener
