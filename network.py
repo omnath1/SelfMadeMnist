@@ -55,7 +55,7 @@ class network(object):
         return a
 
 
-    def SGD(self, training_data, epochs, mini_batch_size, eta, lmbda=0.0, cost_function="quadratic", image_shift=0, test_data=None, random_stat=None, training_id=None, should_stop=None, log_callback=None):
+    def SGD(self, training_data, epochs, mini_batch_size, eta, lmbda=0.0, cost_function="quadratic", image_shift=0, image_scale=0, test_data=None, random_stat=None, training_id=None, should_stop=None, log_callback=None):
         if test_data:
             n_test = len(test_data)
 
@@ -80,7 +80,7 @@ class network(object):
                         print("Training stopped because a newer training run started.")
                     return False
 
-                self.update_mini_batch(mini_batch, eta, cost_function, image_shift, lmbda, n)
+                self.update_mini_batch(mini_batch, eta, cost_function, image_shift, lmbda, n, image_scale)
 
             if test_data:
                 correct = self.evaluate(test_data)
@@ -132,13 +132,13 @@ class network(object):
         return filename
 
 
-    def update_mini_batch(self, mini_batch, eta, cost_function, image_shift, lmbda, n):
+    def update_mini_batch(self, mini_batch, eta, cost_function, image_shift, lmbda, n, image_scale):
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
 
         for x, y in mini_batch:
             x = random_shift_image(x, max_shift=image_shift)
-            x = random_scale_image(x)
+            x = random_scale_image(x, image_scale)
 
             delta_nabla_b, delta_nabla_w = self.backprop(x, y, cost_function)
             nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
@@ -234,7 +234,9 @@ def random_shift_image(x, max_shift=1):
     return shifted.reshape(784, 1)
 
 
-def random_scale_image(x, min_scale=0.8, max_scale=1.2):
+def random_scale_image(x, image_scale):
+    min_scale = 1 - image_scale
+    max_scale = 1 + image_scale
     image = x.reshape(28, 28)
 
     scale = random.uniform(min_scale, max_scale)

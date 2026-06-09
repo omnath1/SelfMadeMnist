@@ -8,9 +8,10 @@ INPUT_NEURON = 784
 OUTPUT_NEURON = 10
 current_network = None
 current_training_id = 0
+image_scale = 0.2
 
 
-def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta, lmbda, image_shift, cost_function, output_activation, weight_init, save_model, model_name):
+def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta, lmbda, image_shift, image_scale, cost_function, output_activation, weight_init, save_model, model_name):
     global current_network, current_training_id
 
     current_training_id += 1
@@ -31,6 +32,7 @@ def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta, lmbda,
         lmbda=lmbda,
         cost_function=cost_function,
         image_shift=image_shift,
+        image_scale=image_scale,
         test_data=test_data,
         training_id=my_training_id,
         should_stop=lambda training_id: training_id != current_training_id,

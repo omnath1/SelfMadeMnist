@@ -580,6 +580,38 @@ def create_image_shift_entry(root):
     return image_shift_entry
 
 
+def create_image_scale_entry(root):
+    image_scale_label = tk.Label(
+        root,
+        text="Image scale:",
+        font=("Arial", 18),
+        bg=BG_COLOR
+    )
+
+    image_scale_label.place(
+        relx=0.3,
+        y=950
+    )
+
+    image_scale_entry = tk.Entry(
+        root,
+        font=("Arial", 18),
+        width=10
+    )
+
+    image_scale_entry.insert(0, "0.2")
+
+    image_scale_entry.place(
+        relx=0.3,
+        y=1000
+    )
+
+    current_page_widgets.append(image_scale_entry)
+    current_page_widgets.append(image_scale_label)
+
+    return image_scale_entry
+
+
 def create_cost_function_dropdown(root):
     cost_function_label = tk.Label(
         root,
@@ -717,7 +749,7 @@ def create_save_model_toggle(root):
     return save_model_var, model_name_entry
 
 
-def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry, lmbda_entry, image_shift_entry, cost_function_entry, output_activation, weight_init, save_model_var, model_name_entry):
+def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_entry, mini_batch_size_entry, eta_entry, lmbda_entry, image_shift_entry, image_scale_entry, cost_function_entry, output_activation, weight_init, save_model_var, model_name_entry):
     train_model_button = tk.Button(
         root,
         text="Train Model",
@@ -733,6 +765,7 @@ def train_model_button(root, train_model, console, hidden_neuron_entry, epoch_en
                 float(eta_entry.get()),
                 float(lmbda_entry.get()),
                 int(image_shift_entry.get()),
+                float(image_scale_entry.get()),
                 cost_function_entry.get(),
                 output_activation.get(),
                 weight_init.get(),
@@ -770,6 +803,8 @@ def open_training_page(root, training_data, current_page_widgets, train_model):
 
     image_shift_entry = create_image_shift_entry(root)
 
+    image_scale_entry = create_image_scale_entry(root)
+
     cost_function = create_cost_function_dropdown(root)
 
     output_activation = create_output_activation_dropdown(root)
@@ -789,6 +824,7 @@ def open_training_page(root, training_data, current_page_widgets, train_model):
         eta_entry,
         lmbda_entry,
         image_shift_entry,
+        image_scale_entry,
         cost_function,
         output_activation,
         weight_init,
