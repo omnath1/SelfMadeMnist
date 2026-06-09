@@ -828,8 +828,6 @@ def setup_drawing(canvas):
         if 0 <= row < GRID_SIZE and 0 <= column < GRID_SIZE:
             canvas.pixels[row][column] = 1
 
-            predict_canvas(canvas)
-
             x1 = column * PIXEL_SIZE
             y1 = row * PIXEL_SIZE
             x2 = x1 + PIXEL_SIZE
@@ -843,6 +841,8 @@ def setup_drawing(canvas):
                 fill="white",
                 outline="white"
             )
+
+            predict_canvas(canvas)
 
     canvas.bind("<Button-1>", draw_pixel)
     canvas.bind("<B1-Motion>", draw_pixel)
@@ -1033,7 +1033,7 @@ def update_prediction_table(output):
         value = output[digit][0]
 
         prediction_labels[digit].configure(
-            text=f"{digit}: {value*100:.0F}"
+            text=f"{digit}: {value*100:.2F}"
         )
 
 

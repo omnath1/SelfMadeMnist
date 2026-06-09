@@ -2,6 +2,8 @@ import random
 import numpy as np
 import json
 import os
+from PIL import Image
+
 
 class network(object):
     def __init__(self, sizes, weight_initialization="random", output_activation="sigmoid"):
@@ -136,6 +138,7 @@ class network(object):
 
         for x, y in mini_batch:
             x = random_shift_image(x, max_shift=image_shift)
+            x = random_scale_image(x)
 
             delta_nabla_b, delta_nabla_w = self.backprop(x, y, cost_function)
             nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
@@ -229,6 +232,27 @@ def random_shift_image(x, max_shift=1):
     ]
 
     return shifted.reshape(784, 1)
+
+
+def random_scale_image(x, min_scale=0.8, max_scale=1.2):
+    image = x.reshape(28, 28)
+
+    scale = random.uniform(min_scale, max_scale)
+    new_size = int(28 * scale)
+
+    pil_image = Image.fromarray((image * 255).astype(np.uint8))
+    pil_image = pil_image.resize((new_size, new_size), Image.BILINEAR)
+
+    new_image = Image.new("L", (28, 28), 0)
+
+    left = (28 - new_size) // 2
+    top = (28 - new_size) // 2
+
+    new_image.paste(pil_image, (left, top))
+
+    new_array = np.array(new_image) / 255.0
+
+    return new_array.reshape(784, 1)
 
 
 def softmax(x):
