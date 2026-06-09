@@ -6,9 +6,9 @@ training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
 
 INPUT_NEURON = 784
 OUTPUT_NEURON = 10
-
 current_network = None
 current_training_id = 0
+
 
 def train_model(log_callback, hidden_neuron, epoch, mini_batch_size, eta, lmbda, image_shift, cost_function, output_activation, weight_init, save_model, model_name):
     global current_network, current_training_id
