@@ -22,6 +22,21 @@ class network(object):
         if output_activation != "sigmoid" and output_activation != "softmax":
             raise ValueError("output_activation must be 'sigmoid' or 'softmax'")
 
+    @classmethod
+    def load(cls, filename):
+        with open(filename, "r") as f:
+            data = json.load(f)
+
+        net = cls(
+            data["sizes"],
+            output_activation=data["output_activation"]
+        )
+
+        net.weights = [np.array(w) for w in data["weights"]]
+        net.biases = [np.array(b) for b in data["biases"]]
+
+        return net
+
 
     def feedforward(self, a):
         for i, (b, w) in enumerate(zip(self.biases, self.weights)):

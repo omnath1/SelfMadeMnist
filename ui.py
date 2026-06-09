@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 import random
 import threading
 import os
+from network import network
 
 # Constants / global variables
 BG_COLOR = "#454545"
@@ -907,13 +908,46 @@ def create_saved_model_dropdown(root):
     )
 
     saved_model_dropdown.place(
-        x=1100,
-        y=200
+        x=264,
+        y=1115
     )
 
     current_page_widgets.append(saved_model_dropdown)
 
     return selected_model_var
+
+
+def create_load_model_button(root, selected_model_var):
+    load_model_button = tk.Button(
+        root,
+        text="Load Model",
+        width=12,
+        height=2,
+        command=lambda: load_selected_model(selected_model_var)
+    )
+
+    load_model_button.place(
+        x=640,
+        y=1103
+    )
+
+    current_page_widgets.append(load_model_button)
+
+
+def load_selected_model(selected_model_var):
+    model_name = selected_model_var.get()
+
+    if model_name == "No saved models":
+        print("No model selected")
+        return None
+
+    model_path = os.path.join("saved_models", model_name)
+
+    loaded_model = network.load(model_path)
+
+    print("Loaded model:", model_name)
+
+    return loaded_model
 
 
 # Test page opener
@@ -929,6 +963,11 @@ def open_test_page(root, training_data, train_model, screen_height):
     create_clear_canvas_button(root, drawing_canvas, screen_height)
 
     selected_model_var = create_saved_model_dropdown(root)
+
+    create_load_model_button(
+        root,
+        selected_model_var
+    )
 
     create_back_button(root, training_data, train_model)
 
