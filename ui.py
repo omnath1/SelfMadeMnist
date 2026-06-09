@@ -15,6 +15,8 @@ GRID_SIZE = 28
 PIXEL_SIZE = 25
 IMAGE_SIZE = GRID_SIZE * PIXEL_SIZE
 current_loaded_model = None
+prediction_labels = []
+guess_label = None
 
 # General helper functions
 def clear_current_page():
@@ -886,10 +888,7 @@ def predict_canvas(canvas):
 
     output = current_loaded_model.feedforward(network_input)
 
-    print("Prediction output:")
-    print(output)
-    print("Predicted digit:", np.argmax(output))
-    print("-" * 50)
+    update_prediction_table(output)
 
 
 def get_saved_model_names():
@@ -967,6 +966,57 @@ def load_selected_model(selected_model_var):
     return current_loaded_model
 
 
+def create_prediction_table(root, screen_height):
+    global prediction_labels, guess_label
+
+    prediction_labels = []
+
+    guess_label = tk.Label(
+        root,
+        text="Current guess: None",
+        font=("Arial", 24, "bold"),
+        bg=BG_COLOR
+    )
+
+    guess_label.place(
+        x=1100,
+        y=(screen_height - IMAGE_SIZE) / 2
+    )
+
+    current_page_widgets.append(guess_label)
+
+    for digit in range(10):
+        prediction_label = tk.Label(
+            root,
+            text=f"{digit}: 0%",
+            font=("Arial", 18),
+            bg=BG_COLOR
+        )
+
+        prediction_label.place(
+            x=1100,
+            y=((screen_height - IMAGE_SIZE) / 2) + 60 + digit * 35
+        )
+
+        prediction_labels.append(prediction_label)
+        current_page_widgets.append(prediction_label)
+
+
+def update_prediction_table(output):
+    predicted_digit = np.argmax(output)
+
+    guess_label.configure(
+        text=f"Current guess: {predicted_digit}"
+    )
+
+    for digit in range(10):
+        value = output[digit][0]
+
+        prediction_labels[digit].configure(
+            text=f"{digit}: {value*100:.0F}"
+        )
+
+
 # Test page opener
 def open_test_page(root, training_data, train_model, screen_height):
     clear_current_page()
@@ -985,6 +1035,8 @@ def open_test_page(root, training_data, train_model, screen_height):
         root,
         selected_model_var
     )
+
+    create_prediction_table(root, screen_height)
 
     create_back_button(root, training_data, train_model)
 
